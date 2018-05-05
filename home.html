@@ -58,19 +58,74 @@
 
   </div>
   <script src="https://unpkg.com/vue/dist/vue.js "></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js "></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
   <script type="text/javascript ">
+    const user = 'client'
+    const password = 'client'
+
+    const host = 'm14.cloudmqtt.com'
+    const port = 38087
+    const server_topic = 'server'
+    const iot_topic = 'arduino'
+
+    const action_on = 'on'
+    const action_off = 'off'
+
+    var client = new Paho.MQTT.Client(host, port, 'web_' + parseInt(Math.random() * 100, 10))
+
+
+    var options = {
+      useSSL: true,
+      userName: user,
+      password: password,
+      onSuccess:onConnect,
+      onFailure:doFail
+    }
+
+    // called when the client connects
+    function onConnect() {
+      // Once a connection has been made, make a subscription and send a message.
+      console.log("onConnect");
+      client.subscribe(iot_topic);
+      message = new Paho.MQTT.Message("Hello CloudMQTT");
+      message.destinationName = server_topic;
+      client.send(message);
+    }
+
+    function doFail(e){
+      console.log(e);
+    }
+
     var app = new Vue({
       el: '#app',
       methods: {
         toggleState(device) {
-          axios.post('/web', {
-            _id: device._id,
-            isOn: !device.isOn
-          }).then(result => {
-            console.log(`home#Result: ${JSON.stringify(result.data)}`);
-            device.isOn = result.data.isOn
-          })
+          var payload = {
+            device: device._id,
+            action: device.isOn ? action_off : action_on,
+            sender: 'server',
+          }
+          message = new Paho.MQTT.Message(JSON.stringify(payload));
+          message.destinationName = server_topic;
+          this.client.send(message);
+
+          device.req_flag = true
+        },
+        onMessageArrived(message) {
+          console.log("onMessageArrived:"+message.payloadString);
+          if (JSON.parse(message.payloadString).message === 'done')
+            {
+              var device = this.devices.find(d => d.req_flag === true)
+              device.isOn = !device.isOn
+              device.req_flag = false
+            }
+          else
+            console.error('Request failed');
+        },
+        onConnectionLost(responseObject) {
+          if (responseObject.errorCode !== 0) {
+            console.log("onConnectionLost:"+responseObject.errorMessage);
+          }
         },
         stateStyle(isOn) {
           return {
@@ -85,12 +140,36 @@
           }
         }
       },
-      mounted: async function () {
-        let response = await axios.get('/devices')
-        this.devices = response.data.map(i => i);
+      created: function() {
+        this.client = client
+
+        this.client.onConnectionLost = this.onConnectionLost;
+        this.client.onMessageArrived = this.onMessageArrived;
+
+        // connect the client
+        this.client.connect(options);
       },
       data: {
-        devices: []
+        client: {},
+        devices: [
+          { _id: 4,
+            isOn: false,
+            name: 'Fan',
+            req_flag: false
+          },
+          {
+            _id: 2,
+            isOn: false,
+            name: 'Room Lights',
+            req_flag: false
+          },
+          {
+            _id: 5,
+            isOn: false,
+            name: 'Outdoor Lights',
+            req_flag: false
+          }
+        ]
       }
     })
   </script>

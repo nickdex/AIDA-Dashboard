@@ -73,32 +73,20 @@
 
     var client = new Paho.MQTT.Client(host, port, 'web_' + parseInt(Math.random() * 100, 10))
 
-
-    var options = {
-      useSSL: true,
-      userName: user,
-      password: password,
-      onSuccess:onConnect,
-      onFailure:doFail
-    }
-
-    // called when the client connects
-    function onConnect() {
-      // Once a connection has been made, make a subscription and send a message.
-      console.log("onConnect");
-      client.subscribe(iot_topic);
-      message = new Paho.MQTT.Message("Hello CloudMQTT");
-      message.destinationName = server_topic;
-      client.send(message);
-    }
-
-    function doFail(e){
-      console.log(e);
-    }
-
     var app = new Vue({
       el: '#app',
       methods: {
+        onConnect() {
+          // called when the client connects
+          // Once a connection has been made, make a subscription and send a message.
+          console.log("onConnect");
+          this.client.subscribe(iot_topic);
+          message = new Paho.MQTT.Message("Hello CloudMQTT");
+          message.destinationName = server_topic;
+          this.client.send(message);
+
+          this.show = true
+        },
         toggleState(device) {
           var payload = {
             device: device._id,
@@ -127,6 +115,9 @@
             console.log("onConnectionLost:"+responseObject.errorMessage);
           }
         },
+        doFail(e){
+          console.log(e);
+        },
         stateStyle(isOn) {
           return {
             'is-success': isOn,
@@ -142,6 +133,14 @@
       },
       created: function() {
         this.client = client
+
+        var options = {
+          useSSL: true,
+          userName:  user,
+          password:  password,
+          onSuccess: this.onConnect,
+          onFailure: this.doFail
+        }
 
         this.client.onConnectionLost = this.onConnectionLost;
         this.client.onMessageArrived = this.onMessageArrived;

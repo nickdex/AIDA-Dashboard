@@ -55,7 +55,12 @@
 
       </div>
     </section>
-
+    <transition name="fade">
+      <div v-if="show" class="notification is-success">
+        <button class="delete" @click="show = false"></button>
+        <p>{{message}}</p>
+      </div>
+    </transition>
   </div>
   <script src="https://unpkg.com/vue/dist/vue.js "></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
@@ -86,6 +91,7 @@
           this.client.send(message);
 
           this.show = true
+          this.message = 'Connected'
         },
         toggleState(device) {
           var payload = {
@@ -113,10 +119,15 @@
         onConnectionLost(responseObject) {
           if (responseObject.errorCode !== 0) {
             console.log("onConnectionLost:"+responseObject.errorMessage);
+
+            this.show = true
+            this.message = 'Connection lost'
           }
         },
         doFail(e){
           console.log(e);
+          this.show = true
+          this.message = 'Failed to Connect'
         },
         stateStyle(isOn) {
           return {
@@ -150,6 +161,8 @@
       },
       data: {
         client: {},
+        show: false,
+        message: '',
         devices: [
           { _id: 4,
             isOn: false,

@@ -1,8 +1,19 @@
 {
     "cSpell.words": [
+        "auto",
         "browserslist",
+        "cloudmqtt",
+        "crossorigin",
         "eventsource",
+        "fix",
+        "icon",
+        "msapplication",
+        "on",
+        "paho",
         "polyfill",
-        "vuetify"
+        "save",
+        "tslint",
+        "vuetify",
+        "x"
     ]
 }

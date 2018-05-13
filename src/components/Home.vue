@@ -7,6 +7,10 @@
           </v-btn>
       </v-flex>
     </v-layout>
+    <v-snackbar :color="snackColor" v-model="snackbar">
+      {{ snackText }}
+      <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -32,10 +36,13 @@ export default {
         const device = this.devices.find(d => d.reqFlag === true);
         device.isOn = !device.isOn;
         device.reqFlag = false;
-      } // else console.error('Request failed');
+      } else this.snackText = 'Request Failed';
     }
   },
   data: () => ({
+    snackbar: false,
+    snackColor: 'success',
+    snackText: '',
     devices: [
       {
         id: 4,

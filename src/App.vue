@@ -9,7 +9,9 @@
       <Home/>
     </v-content>
     <v-footer :fixed="fixed" app>
-      <span>&copy; 2017</span>
+      <v-spacer></v-spacer>
+      <span>Made with ♥ in India</span>
+      <v-spacer></v-spacer>
     </v-footer>
   </v-app>
 </template>
@@ -20,19 +22,8 @@ import Home from './components/Home';
 export default {
   data() {
     return {
-      clipped: false,
-      drawer: true,
       fixed: false,
-      items: [
-        {
-          icon: 'bubble_chart',
-          title: 'Inspire'
-        }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'AIDA Dashboard'
     };
   },
   name: 'App',

@@ -9,7 +9,9 @@
       <Home/>
     </v-content>
     <v-footer :fixed="fixed" app>
-      <span>&copy; 2017</span>
+      <v-spacer></v-spacer>
+      <span>Made with ♥ in India</span>
+      <v-spacer></v-spacer>
     </v-footer>
   </v-app>
 </template>

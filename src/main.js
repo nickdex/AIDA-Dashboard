@@ -8,7 +8,7 @@ import App from './App';
 
 Vue.use(Vuetify, {
   theme: {
-    primary: '#ee44aa',
+    primary: '#616161',
     secondary: '#424242',
     accent: '#82B1FF',
     error: '#FF5252',
@@ -20,7 +20,7 @@ Vue.use(Vuetify, {
 
 const options = {
   username: process.env.USERNAME,
-  password: process.env.PASSWORD,
+  password: process.env.PASSWORD
 };
 
 Vue.use(VueMqtt, process.env.WEB_SOCKET, options);

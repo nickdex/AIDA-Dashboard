@@ -2,7 +2,7 @@
   <v-container fluid fill-height>
     <v-layout wrap align-center>
       <v-flex xs12 sm4 md4 v-for="device in devices" :key="device.id" text-xs-center>
-          <v-btn @click.native="toggleState(device)" large :color="colorStyle(device.isOn)">{{ device.name }}
+          <v-btn :loading="device.reqFlag" @click.native="toggleState(device)" large :color="colorStyle(device.isOn)">{{ device.name }}
               <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
           </v-btn>
       </v-flex>

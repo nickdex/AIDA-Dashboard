@@ -9,7 +9,7 @@
     </v-layout>
     <v-snackbar :color="snackColor" v-model="snackbar">
       {{ snackText }}
-      <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+    <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </v-container>
 </template>
@@ -66,9 +66,6 @@ export default {
   }),
   created() {
     this.$mqtt.subscribe(process.env.IOT_TOPIC);
-  },
-  props: {
-    source: String
   }
 };
 </script>

@@ -15,19 +15,35 @@
 </template>
 
 <script>
+import axios from '../http';
+
 export default {
   methods: {
     colorStyle: isOn => (isOn ? 'success' : 'error'),
     iconStyle: isOn => (isOn ? 'fa-toggle-on' : 'fa-toggle-off'),
-    toggleState(device) {
+    async toggleState(device) {
       const payload = {
         device: device.id,
         action: device.isOn ? 'off' : 'on',
         sender: 'server'
       };
-      this.$mqtt.publish(process.env.SERVER_TOPIC, JSON.stringify(payload));
-
-      this.devices.find(d => d.id === device.id).reqFlag = true;
+      const res = await axios.post(
+        `${device.token}/${device.key}/${!device.isOn}`
+      );
+      if (res.status === 200) {
+        this.$mqtt.publish(process.env.SERVER_TOPIC, JSON.stringify(payload));
+        this.devices.find(d => d.id === device.id).reqFlag = true;
+      } else this.showSnackBar();
+    },
+    updateDevice(res, key) {
+      /* eslint-disable no-console */
+      console.log(res);
+      this.devices.find(d => d.key === key).isOn = res.data;
+    },
+    showSnackBar() {
+      this.snackbar = true;
+      this.snackbar = 'error';
+      this.snackText = 'Request Failed';
     }
   },
   mqtt: {
@@ -36,7 +52,7 @@ export default {
         const device = this.devices.find(d => d.reqFlag === true);
         device.isOn = !device.isOn;
         device.reqFlag = false;
-      } else this.snackText = 'Request Failed';
+      } else this.showSnackBar();
     }
   },
   data: () => ({
@@ -46,12 +62,16 @@ export default {
     devices: [
       {
         id: 4,
+        key: 'fan',
+        token: '35e9799e',
         isOn: false,
         name: 'Fan',
         reqFlag: false
       },
       {
         id: 2,
+        key: 'light',
+        token: 'cac5317f',
         isOn: false,
         name: 'Room Lights',
         reqFlag: false
@@ -59,6 +79,8 @@ export default {
       {
         id: 5,
         isOn: false,
+        key: 'outdoor',
+        token: '869c5aa9',
         name: 'Outdoor Lights',
         reqFlag: false
       }
@@ -66,6 +88,12 @@ export default {
   }),
   created() {
     this.$mqtt.subscribe(process.env.IOT_TOPIC);
+    for (let index = 0; index < this.devices.length; index += 1) {
+      const device = this.devices[index];
+      axios
+        .get(`${device.token}/${device.key}`)
+        .then(res => this.updateDevice(res, device.key));
+    }
   }
 };
 </script>

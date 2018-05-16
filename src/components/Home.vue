@@ -1,7 +1,8 @@
 <template>
   <v-container fluid fill-height>
     <v-layout wrap align-center>
-      <v-flex xs12 sm4 md4 v-for="device in devices" :key="device.id" text-xs-center>
+      <Spinner v-if="!isOnline" />
+      <v-flex v-else xs12 sm4 md4 v-for="device in devices" :key="device.id" text-xs-center>
           <v-btn :loading="device.reqFlag" @click.native="toggleState(device)" large :color="colorStyle(device.isOn)">{{ device.name }}
               <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
           </v-btn>
@@ -15,7 +16,8 @@
 </template>
 
 <script>
-import axios from '../http';
+import { kvHttp, all, spread } from '../http';
+import Spinner from './Spinner';
 
 export default {
   methods: {
@@ -27,7 +29,7 @@ export default {
         action: device.isOn ? 'off' : 'on',
         sender: 'server'
       };
-      const res = await axios.post(
+      const res = await kvHttp.post(
         `${device.token}/${device.key}/${!device.isOn}`
       );
       if (res.status === 200) {
@@ -44,6 +46,12 @@ export default {
       this.snackbar = true;
       this.snackbar = 'error';
       this.snackText = 'Request Failed';
+    },
+    connect(connack) {
+      this.isMqttConnected = true;
+      this.isOnline = this.isMqttConnected && this.areDevicesLoaded;
+      /* eslint-disable no-console */
+      console.log(connack);
     }
   },
   mqtt: {
@@ -59,6 +67,9 @@ export default {
     snackbar: false,
     snackColor: 'success',
     snackText: '',
+    isMqttConnected: false,
+    areDevicesLoaded: false,
+    isOnline: false,
     devices: [
       {
         id: 4,
@@ -87,13 +98,29 @@ export default {
     ]
   }),
   created() {
+    this.$mqtt.on('connect', this.connect);
     this.$mqtt.subscribe(process.env.IOT_TOPIC);
+    const requests = [];
     for (let index = 0; index < this.devices.length; index += 1) {
       const device = this.devices[index];
-      axios
-        .get(`${device.token}/${device.key}`)
-        .then(res => this.updateDevice(res, device.key));
+      requests.push(kvHttp.get(`${device.token}/${device.key}`));
     }
+
+    all(requests).then(
+      spread((first, second, third) => {
+        const results = [first, second, third];
+        results.forEach((result) => {
+          this.devices.find(d => result.request.responseURL.includes(d.token)).isOn = result.data;
+        });
+
+        this.areDevicesLoaded = true;
+        this.isOnline = this.isMqttConnected && this.areDevicesLoaded;
+        this.$emit('loaded');
+      })
+    );
+  },
+  components: {
+    Spinner
   }
 };
 </script>

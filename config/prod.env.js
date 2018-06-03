@@ -4,5 +4,6 @@ module.exports = {
   SERVER_TOPIC: '"server"',
   IOT_TOPIC: '"arduino"',
   USERNAME: '"client"',
-  PASSWORD: '"client"'
+  PASSWORD: '"client"',
+  LOCAL_URL: '"http://192.168.0.100:3000/"'
 };

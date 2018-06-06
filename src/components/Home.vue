@@ -36,7 +36,7 @@ export default {
         const toggleDevice = this.devices.find(d => d.id === device.id);
         toggleDevice.reqFlag = true;
 
-        piHttp.post('/web', payload, { timeout: 3000 }).then(
+        piHttp.post('/web', payload, { timeout: 5000 }).then(
           result => {
             if (result.data === 'done') {
               toggleDevice.isOn = !toggleDevice.isOn;

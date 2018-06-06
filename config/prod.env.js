@@ -5,5 +5,5 @@ module.exports = {
   IOT_TOPIC: '"arduino"',
   USERNAME: '"client"',
   PASSWORD: '"client"',
-  LOCAL_URL: '"http://192.168.0.100:3000/"'
+  LOCAL_URL: '"https://jarvis-backend.azurewebsites.net"'
 };

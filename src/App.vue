@@ -3,7 +3,7 @@
     <v-toolbar app text-xs-center>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat icon :color="isOnline?'green':'red'">
+      <v-btn flat icon :color="isMqttConnected?'green':'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
     </v-toolbar>
@@ -24,14 +24,14 @@ import Home from './components/Home';
 export default {
   methods: {
     online() {
-      this.isOnline = true;
+      this.isMqttConnected = true;
     }
   },
   data() {
     return {
       fixed: false,
       title: 'AIDA Dashboard',
-      isOnline: false
+      isMqttConnected: false
     };
   },
   name: 'App',

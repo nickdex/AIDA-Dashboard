@@ -64,6 +64,7 @@ export default {
       this.isMqttConnected = true;
       /* eslint-disable no-console */
       console.log(connack);
+      this.$emit('loaded');
     }
   },
   mqtt: {
@@ -133,7 +134,6 @@ export default {
         });
 
         this.isOnline = true;
-        this.$emit('loaded');
       })
     );
   },

@@ -108,7 +108,7 @@ export default {
         id: 5,
         isOn: false,
         key: 'outdoor',
-        token: '869c5aa9',
+        token: '6d82c9a6',
         name: 'Outdoor Lights',
         reqFlag: false
       }

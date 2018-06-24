@@ -3,12 +3,15 @@
     <v-toolbar app text-xs-center>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn flat icon @click="refresh()">
+        <v-icon>fas fa-sync</v-icon>
+      </v-btn>
       <v-btn flat icon :color="isMqttConnected?'green':'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
     </v-toolbar>
     <v-content>
-      <Home @loaded="online()"/>
+      <Home ref="home" @loaded="online()"/>
     </v-content>
     <v-footer :fixed="fixed" app>
       <v-spacer></v-spacer>
@@ -25,6 +28,9 @@ export default {
   methods: {
     online() {
       this.isMqttConnected = true;
+    },
+    refresh() {
+      this.$refs.home.refreshValues();
     }
   },
   data() {

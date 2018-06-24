@@ -65,6 +65,27 @@ export default {
       /* eslint-disable no-console */
       console.log(connack);
       this.$emit('loaded');
+    },
+    refreshValues() {
+      const requests = [];
+      for (let index = 0; index < this.devices.length; index += 1) {
+        const device = this.devices[index];
+        requests.push(kvHttp.get(`${device.token}/${device.key}`));
+      }
+
+      all(requests).then(
+        spread((first, second, third) => {
+          const results = [first, second, third];
+          results.forEach(result => {
+            this.devices.find(d =>
+              result.request.responseURL.includes(d.token)
+            ).isOn =
+              result.data;
+          });
+
+          this.isOnline = true;
+        })
+      );
     }
   },
   mqtt: {
@@ -117,25 +138,7 @@ export default {
   created() {
     this.$mqtt.on('connect', this.connect);
     this.$mqtt.subscribe(process.env.IOT_TOPIC);
-    const requests = [];
-    for (let index = 0; index < this.devices.length; index += 1) {
-      const device = this.devices[index];
-      requests.push(kvHttp.get(`${device.token}/${device.key}`));
-    }
-
-    all(requests).then(
-      spread((first, second, third) => {
-        const results = [first, second, third];
-        results.forEach(result => {
-          this.devices.find(d =>
-            result.request.responseURL.includes(d.token)
-          ).isOn =
-            result.data;
-        });
-
-        this.isOnline = true;
-      })
-    );
+    this.refreshValues();
   },
   components: {
     Spinner

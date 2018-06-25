@@ -98,6 +98,7 @@ export default {
             device.reqFlag = false;
           }
         } else this.showSnackBar('error', 'Request Failed');
+        this.isLocal = true;
       }
     }
   },

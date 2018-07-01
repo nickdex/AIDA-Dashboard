@@ -1,6 +1,6 @@
 {
-  "name": "jarvis",
-  "short_name": "jarvis",
+  "name": "AIDA Dasboard",
+  "short_name": "AIDA",
   "icons": [
     {
       "src": "/static/img/icons/android-chrome-192x192.png",
@@ -16,5 +16,6 @@
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#212121"
+  "theme_color": "#212121",
+  "gcm_sender_id": "348283226514"
 }

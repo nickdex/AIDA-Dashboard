@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const babel = require('babel-core');
 const path = require('path');
 const utils = require('./utils');
 const webpack = require('webpack');
@@ -95,6 +95,15 @@ const webpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, '../static'),
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
+      },
+      {
+        // copy custom service worker
+        from: path.resolve(__dirname, '../src/custom-sw.js'),
+        to: config.build.assetsRoot + '/[name].js',
+        transform: (content, path) => {
+          // and transpile it while copying
+          return babel.transformFileSync(path).code;
+        }
       }
     ]),
     // service worker caching
@@ -103,7 +112,13 @@ const webpackConfig = merge(baseWebpackConfig, {
       filename: 'service-worker.js',
       staticFileGlobs: ['dist/**/*.{js,html,css}'],
       minify: true,
-      stripPrefix: 'dist/'
+      stripPrefix: 'dist/',
+      importScripts: [
+        {
+          // transformed custom service worker
+          filename: 'custom-sw.js'
+        }
+      ]
     })
   ]
 });

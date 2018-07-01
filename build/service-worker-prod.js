@@ -26,7 +26,7 @@
             console.log(`Notification status: ${result}`)
           );
 
-          navigator.serviceWorker.ready
+          navigator.serviceWorker
             .register('service-worker.js')
             .then(registration => {
               registration.pushManager

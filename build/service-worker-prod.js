@@ -14,6 +14,25 @@
       )
   );
 
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+  const vapidPublicKey =
+    'BK2ZCisP0bKui7Sxz2H11xHqpKoKO_LkGwptUyxPs9VOjbqm5lRfYvcqSNSo5B8WtfjamAlym5uW89do9JrmHYY';
+  const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
   window.addEventListener('load', function() {
     if (
       'serviceWorker' in navigator &&
@@ -25,21 +44,16 @@
           Notification.requestPermission(result =>
             console.log(`Notification status: ${result}`)
           );
-
-          navigator.serviceWorker
-            .register('service-worker.js')
-            .then(registration => {
-              registration.pushManager
-                .subscribe({ userVisibleOnly: true })
-                .then(subscription => {
-                  const uid = subscription.endpoint.substring(
-                    subscription.endpoint.lastIndexOf('/') + 1
-                  );
-                  axios.post('http://192.168.0.123:3000/fcm', {
-                    name: 'nikhil',
-                    uid: uid
-                  });
-                });
+          registration.pushManager
+            .subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: convertedVapidKey
+            })
+            .then(subscription => {
+              axios.post('http://localhost:3000/push', {
+                subscription: subscription.toJSON(),
+                name: 'nikhil'
+              });
             });
           // updatefound is fired if service-worker.js changes.
           registration.onupdatefound = function() {

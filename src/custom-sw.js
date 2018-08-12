@@ -20,7 +20,7 @@ self.addEventListener('notificationclick', event => {
   if (action !== undefined) {
     console.debug('Posting notification action using fetch api');
 
-    fetch('http://localhost:3000/push/click', {
+    fetch('https://aida-server.herokuapp.com/push/click', {
       method: 'POST',
       body: self.JSON.stringify({ action }),
       headers: {

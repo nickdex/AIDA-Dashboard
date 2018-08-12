@@ -50,7 +50,7 @@
               applicationServerKey: convertedVapidKey
             })
             .then(subscription => {
-              axios.post('http://localhost:3000/push', {
+              axios.post('https://aida-server.herokuapp.com/push', {
                 subscription: subscription.toJSON(),
                 name: 'nikhil'
               });

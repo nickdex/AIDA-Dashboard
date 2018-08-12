@@ -36,14 +36,15 @@ export default {
         const toggleDevice = this.devices.find(d => d.id === device.id);
         toggleDevice.reqFlag = true;
 
-        piHttp.post('/web', payload, { timeout: 5000 }).then(
-          result => {
+        piHttp
+          .post('/web', payload, { timeout: 5000 })
+          .then(result => {
             if (result.data === 'done') {
               toggleDevice.isOn = !toggleDevice.isOn;
               toggleDevice.reqFlag = false;
             } else throw Error('Local Request Failed');
-          },
-          () => {
+          })
+          .catch(() => {
             this.showSnackBar('info', 'Local not available. Switching to Web');
             this.isLocal = false; // Start receiving messages from mqtt directly
 
@@ -51,8 +52,7 @@ export default {
               process.env.SERVER_TOPIC,
               JSON.stringify(payload)
             );
-          }
-        );
+          });
       } else this.showSnackBar('error', 'Device state could not be loaded');
     },
     showSnackBar(color, text) {

@@ -4,8 +4,8 @@ export const kvHttp = axios.create({
   baseURL: 'https://api.keyvalue.xyz/'
 });
 
-export const piHttp = axios.create({
-  baseURL: process.env.LOCAL_URL
+export const httpClient = axios.create({
+  baseURL: process.env.SERVER_URL
 });
 
 export const all = requests => axios.all(requests);

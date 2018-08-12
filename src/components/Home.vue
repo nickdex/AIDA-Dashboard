@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { piHttp, kvHttp, all, spread } from '../http';
+import { httpClient, kvHttp, all, spread } from '../http';
 import Spinner from './Spinner';
 
 export default {
@@ -36,7 +36,7 @@ export default {
         const toggleDevice = this.devices.find(d => d.id === device.id);
         toggleDevice.reqFlag = true;
 
-        piHttp
+        httpClient
           .post('/web', payload, { timeout: 5000 })
           .then(result => {
             if (result.data === 'done') {

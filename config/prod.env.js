@@ -5,5 +5,5 @@ module.exports = {
   IOT_TOPIC: '"arduino"',
   USERNAME: '"client"',
   PASSWORD: '"client"',
-  LOCAL_URL: '"https://jarvis-backend.azurewebsites.net"'
+  SERVER_URL: '"https://aida-server.herokuapp.com/"'
 };

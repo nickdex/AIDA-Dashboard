@@ -57,11 +57,13 @@ export default {
       this.snackColor = color;
       this.snackText = text;
     },
-    connect(connack) {
-      this.isMqttConnected = true;
+    connected(connack) {
       /* eslint-disable no-console */
       console.log(connack);
       this.$emit('loaded');
+    },
+    disconnected() {
+      this.$emit('lost');
     },
     refreshValues() {
       httpClient.get('/devices').then(result => {
@@ -92,7 +94,6 @@ export default {
     snackbar: false,
     snackColor: 'success',
     snackText: '',
-    isMqttConnected: false,
     isLocal: true,
     devices: {
       4: {
@@ -122,7 +123,10 @@ export default {
     }
   }),
   created() {
-    this.$mqtt.on('connect', this.connect);
+    this.$mqtt.on('connect', this.connected);
+    this.$mqtt.on('reconnect', this.connected);
+    this.$mqtt.on('close', this.disconnected);
+    this.$mqtt.on('offline', this.disconnected);
     this.$mqtt.subscribe(process.env.IOT_TOPIC);
     this.refreshValues();
   },

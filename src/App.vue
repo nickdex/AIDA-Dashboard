@@ -11,7 +11,7 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <Home ref="home" @loaded="online()"/>
+      <Home ref="home" @loaded="online()" @lost="offline()"/>
     </v-content>
     <v-footer :fixed="fixed" app>
       <v-spacer></v-spacer>
@@ -28,6 +28,9 @@ export default {
   methods: {
     online() {
       this.isMqttConnected = true;
+    },
+    offline() {
+      this.isMqttConnected = false;
     },
     refresh() {
       this.$refs.home.refreshValues();

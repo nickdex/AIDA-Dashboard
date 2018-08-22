@@ -38,32 +38,21 @@ export default {
       toggleDevice.reqFlag = true;
 
       httpClient
-        .post('/web', payload, { timeout: 5000 })
+        .post('/web', payload)
         .then(result => {
           if (result.data === 'done') {
             toggleDevice.isOn = !toggleDevice.isOn;
             toggleDevice.reqFlag = false;
           } else throw Error('Local Request Failed');
         })
-        .catch(() => {
-          this.showSnackBar('info', 'Local not available. Switching to Web');
-          this.isLocal = false; // Start receiving messages from mqtt directly
-
-          this.$mqtt.publish(process.env.SERVER_TOPIC, JSON.stringify(payload));
+        .catch(err => {
+          this.showSnackBar('error', err.message);
         });
     },
     showSnackBar(color, text) {
       this.snackbar = true;
       this.snackColor = color;
       this.snackText = text;
-    },
-    connected(connack) {
-      /* eslint-disable no-console */
-      console.log(connack);
-      this.$emit('loaded');
-    },
-    disconnected() {
-      this.$emit('lost');
     },
     refreshValues() {
       httpClient.get('/devices').then(result => {
@@ -73,21 +62,6 @@ export default {
           localDevice.name = serverDevice.name;
         });
       });
-    }
-  },
-  mqtt: {
-    arduino(data) {
-      if (!this.isLocal) {
-        if (JSON.parse(data).message === 'done') {
-          let device = this.getDevicesArray.find(d => d.reqFlag === true);
-          if (device) {
-            device = this.devices[device.id];
-            device.isOn = !device.isOn;
-            device.reqFlag = false;
-          }
-        } else this.showSnackBar('error', 'Request Failed');
-        this.isLocal = true;
-      }
     }
   },
   data: () => ({
@@ -123,11 +97,6 @@ export default {
     }
   }),
   created() {
-    this.$mqtt.on('connect', this.connected);
-    this.$mqtt.on('reconnect', this.connected);
-    this.$mqtt.on('close', this.disconnected);
-    this.$mqtt.on('offline', this.disconnected);
-    this.$mqtt.subscribe(process.env.IOT_TOPIC);
     this.refreshValues();
   },
   components: {

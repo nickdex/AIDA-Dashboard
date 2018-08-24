@@ -47,6 +47,7 @@ export default {
         })
         .catch(err => {
           this.showSnackBar('error', err.message);
+          this.$emit('lost');
         });
     },
     showSnackBar(color, text) {
@@ -61,6 +62,7 @@ export default {
           localDevice.isOn = serverDevice.isOn;
           localDevice.name = serverDevice.name;
         });
+        this.$emit('loaded');
       });
     }
   },

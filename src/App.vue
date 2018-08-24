@@ -6,7 +6,7 @@
       <v-btn flat icon @click="refresh()">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
-      <v-btn flat icon :color="isMqttConnected?'green':'red'">
+      <v-btn flat icon :color="isOnline?'green':'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
     </v-toolbar>
@@ -27,10 +27,10 @@ import Home from './components/Home';
 export default {
   methods: {
     online() {
-      this.isMqttConnected = true;
+      this.isOnline = true;
     },
     offline() {
-      this.isMqttConnected = false;
+      this.isOnline = false;
     },
     refresh() {
       this.$refs.home.refreshValues();
@@ -40,7 +40,7 @@ export default {
     return {
       fixed: false,
       title: 'AIDA Dashboard',
-      isMqttConnected: false
+      isOnline: false
     };
   },
   name: 'App',

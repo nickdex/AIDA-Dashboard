@@ -1,7 +1,9 @@
 <template>
   <v-app dark>
     <v-toolbar app text-xs-center>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-toolbar-title v-text="title" />
+      <v-spacer></v-spacer>
+      <v-toolbar-title v-text="username" />
       <v-spacer></v-spacer>
       <v-btn flat icon @click="refresh()">
         <v-icon>fas fa-sync</v-icon>
@@ -11,7 +13,8 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <Home ref="home" @loaded="online()" @lost="offline()"/>
+      <Login v-if="!isLoggedIn" @login="loggedIn" />
+      <Home v-else ref="home" @loaded="online" @lost="offline"/>
     </v-content>
     <v-footer :fixed="fixed" app>
       <v-spacer></v-spacer>
@@ -23,6 +26,7 @@
 
 <script>
 import Home from './components/Home';
+import Login from './components/Login';
 
 export default {
   methods: {
@@ -34,17 +38,28 @@ export default {
     },
     refresh() {
       this.$refs.home.refreshValues();
+    },
+    loggedIn(username) {
+      if (username === '' || username == null) {
+        this.loggedIn = false;
+        return;
+      }
+      this.username = username;
+      this.isLoggedIn = true;
     }
   },
   data() {
     return {
       fixed: false,
       title: 'AIDA Dashboard',
-      isOnline: false
+      isOnline: false,
+      isLoggedIn: false,
+      username: ''
     };
   },
   name: 'App',
   components: {
+    Login,
     Home
   }
 };

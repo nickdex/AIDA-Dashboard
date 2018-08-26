@@ -52,11 +52,7 @@ export default {
       this.username = username;
       localStorage.setItem(this.usernameKey, username);
       this.isLoggedIn = true;
-      this.isAlreadyRegistered()
-        .then(result => {
-          this.isSubscribed = result.data.isSubscribed;
-        })
-        .catch(error => console.warn('Backend not available', error));
+      this.setSubscriptionState();
     },
     getVapidKey() {
       const vapidPublicKey =
@@ -75,24 +71,31 @@ export default {
       }
       return outputArray;
     },
-    async isAlreadyRegistered() {
-      return httpClient.get(`/push/${this.username}`);
+    async setSubscriptionState() {
+      try {
+        const result = await httpClient.get(`/push/${this.username}`);
+        if (result && result.data) {
+          this.isSubscribed = result.data.isSubscribed;
+        }
+      } catch (error) {
+        console.warn('Backend not available', error);
+      }
     },
     sendSubscriptionToServer(subscription) {
-      httpClient.post('/push', {
+      return httpClient.post('/push', {
         subscription: subscription.toJSON(),
         name: this.username
       });
     },
     async registerForPush() {
-      const swRegistration = await navigator.serviceWorker.getRegistration();
-
+      const swRegistration = await navigator.serviceWorker.ready;
       try {
         const subscription = await swRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: this.getVapidKey()
         });
-        this.sendSubscriptionToServer(subscription);
+        const result = await this.sendSubscriptionToServer(subscription);
+        console.log(result.data);
       } catch (error) {
         if (Notification.permission === 'denied') {
           console.warn('Notification is denied');
@@ -101,18 +104,22 @@ export default {
         }
       }
     },
-    subscribe() {
+    async subscribe() {
       if (!this.isLoggedIn) {
         console.warn('Log in first');
         return;
       }
       if (this.isSubscribed) return;
-      Notification.requestPermission(result =>
-        console.log(`Notification status: ${result}`)
-      );
-      this.registerForPush().then(() => {
-        this.isSubscribed = true;
-      });
+
+      const result = await Notification.requestPermission();
+      console.log(`Notification status: ${result}`);
+
+      if (result !== 'granted') {
+        console.warn('Notifcation not granted');
+        return;
+      }
+      await this.registerForPush();
+      this.isSubscribed = true;
     }
   },
   created() {
@@ -121,8 +128,9 @@ export default {
       this.isLoggedIn = false;
       return;
     }
-    this.isLoggedIn = true;
     this.username = username;
+    this.isLoggedIn = true;
+    this.setSubscriptionState();
   },
   data() {
     return {

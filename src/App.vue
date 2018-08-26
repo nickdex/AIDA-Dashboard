@@ -50,6 +50,7 @@ export default {
         return;
       }
       this.username = username;
+      localStorage.setItem(this.usernameKey, username);
       this.isLoggedIn = true;
       this.isAlreadyRegistered()
         .then(result => {
@@ -114,6 +115,15 @@ export default {
       });
     }
   },
+  created() {
+    const username = localStorage.getItem(this.usernameKey);
+    if (!username) {
+      this.isLoggedIn = false;
+      return;
+    }
+    this.isLoggedIn = true;
+    this.username = username;
+  },
   data() {
     return {
       fixed: false,
@@ -121,7 +131,8 @@ export default {
       isOnline: false,
       isLoggedIn: false,
       isSubscribed: false,
-      username: ''
+      username: '',
+      usernameKey: 'username'
     };
   },
   name: 'App',

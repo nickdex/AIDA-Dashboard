@@ -111,13 +111,6 @@ export default {
       }
       if (this.isSubscribed) return;
 
-      const result = await Notification.requestPermission();
-      console.log(`Notification status: ${result}`);
-
-      if (result !== 'granted') {
-        console.warn('Notifcation not granted');
-        return;
-      }
       await this.registerForPush();
       this.isSubscribed = true;
     }

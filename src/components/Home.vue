@@ -37,18 +37,17 @@ export default {
       const toggleDevice = this.devices[device.id];
       toggleDevice.reqFlag = true;
 
-      httpClient
-        .post('/web', payload)
-        .then(result => {
-          if (result.data === 'done') {
-            toggleDevice.isOn = !toggleDevice.isOn;
-            toggleDevice.reqFlag = false;
-          } else throw Error('Local Request Failed');
-        })
-        .catch(err => {
-          this.showSnackBar('error', err.message);
-          this.$emit('lost');
-        });
+      try {
+        const result = await httpClient.post('/web', payload);
+
+        if (result.data.isSuccess) {
+          toggleDevice.isOn = !toggleDevice.isOn;
+          toggleDevice.reqFlag = false;
+        } else throw Error('Request Failed');
+      } catch (error) {
+        this.showSnackBar('error', error.message);
+        this.$emit('lost');
+      }
     },
     showSnackBar(color, text) {
       this.snackbar = true;

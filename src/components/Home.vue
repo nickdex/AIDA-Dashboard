@@ -1,8 +1,7 @@
 <template>
   <v-container fluid fill-height>
     <v-layout wrap align-center>
-      <Spinner v-if="!isOnline" />
-      <v-flex v-else xs12 sm4 md4 v-for="device in devices" :key="device.id" text-xs-center>
+      <v-flex xs12 sm4 md4 v-for="device in getDevicesArray" :key="device.id" text-xs-center>
           <v-btn :loading="device.reqFlag" @click.native="toggleState(device)" large :color="colorStyle(device.isOn)">{{ device.name }}
               <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
           </v-btn>
@@ -16,10 +15,15 @@
 </template>
 
 <script>
-import { httpClient, kvHttp, all, spread } from '../http';
+import { httpClient } from '../http';
 import Spinner from './Spinner';
 
 export default {
+  computed: {
+    getDevicesArray() {
+      return Object.values(this.devices);
+    }
+  },
   methods: {
     colorStyle: isOn => (isOn ? 'success' : 'error'),
     iconStyle: isOn => (isOn ? 'fa-toggle-on' : 'fa-toggle-off'),
@@ -29,88 +33,45 @@ export default {
         action: device.isOn ? 'off' : 'on',
         sender: 'server'
       };
-      const res = await kvHttp.post(
-        `${device.token}/${device.key}/${!device.isOn}`
-      );
-      if (res.status === 200) {
-        const toggleDevice = this.devices.find(d => d.id === device.id);
-        toggleDevice.reqFlag = true;
 
-        httpClient
-          .post('/web', payload, { timeout: 5000 })
-          .then(result => {
-            if (result.data === 'done') {
-              toggleDevice.isOn = !toggleDevice.isOn;
-              toggleDevice.reqFlag = false;
-            } else throw Error('Local Request Failed');
-          })
-          .catch(() => {
-            this.showSnackBar('info', 'Local not available. Switching to Web');
-            this.isLocal = false; // Start receiving messages from mqtt directly
+      const toggleDevice = this.devices[device.id];
+      toggleDevice.reqFlag = true;
 
-            this.$mqtt.publish(
-              process.env.SERVER_TOPIC,
-              JSON.stringify(payload)
-            );
-          });
-      } else this.showSnackBar('error', 'Device state could not be loaded');
+      try {
+        const result = await httpClient.post('/web', payload);
+
+        if (result.data.isSuccess) {
+          toggleDevice.isOn = !toggleDevice.isOn;
+          toggleDevice.reqFlag = false;
+        } else throw Error('Request Failed');
+      } catch (error) {
+        this.showSnackBar('error', error.message);
+        this.$emit('lost');
+      }
     },
     showSnackBar(color, text) {
       this.snackbar = true;
       this.snackColor = color;
       this.snackText = text;
     },
-    connect(connack) {
-      this.isMqttConnected = true;
-      /* eslint-disable no-console */
-      console.log(connack);
-      this.$emit('loaded');
-    },
     refreshValues() {
-      const requests = [];
-      for (let index = 0; index < this.devices.length; index += 1) {
-        const device = this.devices[index];
-        requests.push(kvHttp.get(`${device.token}/${device.key}`));
-      }
-
-      all(requests).then(
-        spread((first, second, third) => {
-          const results = [first, second, third];
-          results.forEach(result => {
-            this.devices.find(d =>
-              result.request.responseURL.includes(d.token)
-            ).isOn =
-              result.data;
-          });
-
-          this.isOnline = true;
-        })
-      );
-    }
-  },
-  mqtt: {
-    arduino(data) {
-      if (!this.isLocal) {
-        if (JSON.parse(data).message === 'done') {
-          const device = this.devices.find(d => d.reqFlag === true);
-          if (device) {
-            device.isOn = !device.isOn;
-            device.reqFlag = false;
-          }
-        } else this.showSnackBar('error', 'Request Failed');
-        this.isLocal = true;
-      }
+      httpClient.get('/devices').then(result => {
+        result.data.forEach(serverDevice => {
+          const localDevice = this.devices[serverDevice.id];
+          localDevice.isOn = serverDevice.isOn;
+          localDevice.name = serverDevice.name;
+        });
+        this.$emit('loaded');
+      });
     }
   },
   data: () => ({
     snackbar: false,
     snackColor: 'success',
     snackText: '',
-    isMqttConnected: false,
     isLocal: true,
-    isOnline: false,
-    devices: [
-      {
+    devices: {
+      4: {
         id: 4,
         key: 'fan',
         token: '35e9799e',
@@ -118,7 +79,7 @@ export default {
         name: 'Fan',
         reqFlag: false
       },
-      {
+      2: {
         id: 2,
         key: 'light',
         token: 'cac5317f',
@@ -126,7 +87,7 @@ export default {
         name: 'Room Lights',
         reqFlag: false
       },
-      {
+      5: {
         id: 5,
         isOn: false,
         key: 'outdoor',
@@ -134,11 +95,9 @@ export default {
         name: 'Outdoor Lights',
         reqFlag: false
       }
-    ]
+    }
   }),
   created() {
-    this.$mqtt.on('connect', this.connect);
-    this.$mqtt.subscribe(process.env.IOT_TOPIC);
     this.refreshValues();
   },
   components: {

@@ -3,7 +3,6 @@
 import 'vuetify/dist/vuetify.min.css';
 import Vuetify from 'vuetify';
 import Vue from 'vue';
-import VueMqtt from 'vue-mqtt';
 import App from './App';
 
 Vue.use(Vuetify, {
@@ -17,13 +16,6 @@ Vue.use(Vuetify, {
     warning: '#FFC107'
   }
 });
-
-const options = {
-  username: process.env.USERNAME,
-  password: process.env.PASSWORD
-};
-
-Vue.use(VueMqtt, process.env.WEB_SOCKET, options);
 
 Vue.config.productionTip = false;
 

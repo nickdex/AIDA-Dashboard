@@ -1,5 +1,5 @@
 {
-  "name": "jarvis",
+  "name": "aida-dashboard",
   "version": "1.0.0",
   "description": "Dashboard for my home",
   "author": "Nikhil Warke <nwarke@protonmail.com>",
@@ -14,7 +14,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "vue": "^2.5.2",
-    "vue-mqtt": "^2.0.2",
     "vuetify": "^1.0.0"
   },
   "devDependencies": {

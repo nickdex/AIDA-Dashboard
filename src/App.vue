@@ -1,10 +1,8 @@
 <template>
   <v-app dark>
     <v-toolbar app text-xs-center>
-      <v-toolbar-title v-text="title" />
-      <v-spacer></v-spacer>
-      <v-toolbar-title v-text="username" />
-      <v-spacer></v-spacer>
+      <v-toolbar-title v-text="isLoggedIn ? username : title" />
+      <v-spacer />
       <v-btn flat icon @click="subscribe()">
         <v-icon>fas {{isSubscribed ? 'fa-bell-slash' : 'fa-bell'}}</v-icon>
       </v-btn>

@@ -41,14 +41,8 @@ export default {
     refresh() {
       this.$refs.home.refreshValues();
     },
-    loggedIn(username) {
-      if (username === '' || username == null) {
-        this.loggedIn = false;
-        console.warn('Username is invalid');
-        return;
-      }
-      this.username = username;
-      localStorage.setItem(this.usernameKey, username);
+    loggedIn() {
+      this.username = localStorage.getItem(this.usernameKey);
       this.isLoggedIn = true;
       this.setSubscriptionState();
     },
@@ -71,19 +65,27 @@ export default {
     },
     async setSubscriptionState() {
       try {
-        const result = await httpClient.get(`/push/${this.username}`);
+        const result = await httpClient.get(
+          `/clients/${localStorage.getItem('clientName')}?username=${
+            this.username
+          }&deviceType=${localStorage.getItem('deviceType')}`
+        );
         if (result && result.data) {
-          this.isSubscribed = result.data.isSubscribed;
+          this.isSubscribed = !!result.data.subscriptionToken;
         }
       } catch (error) {
         console.warn('Backend not available', error);
       }
     },
     sendSubscriptionToServer(subscription) {
-      return httpClient.post('/push', {
-        subscription: subscription.toJSON(),
-        name: this.username
-      });
+      return httpClient.patch(
+        `/clients/${localStorage.getItem('clientName')}?username=${
+          this.username
+        }&deviceType=${localStorage.getItem('deviceType')}`,
+        {
+          subscriptionToken: subscription.toJSON()
+        }
+      );
     },
     async registerForPush() {
       const swRegistration = await navigator.serviceWorker.ready;

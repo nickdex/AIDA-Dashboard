@@ -1,9 +1,9 @@
 {
   "name": "aida-dashboard",
   "version": "2.1.0",
+  "private": true,
   "description": "Dashboard for my home",
   "author": "Nikhil Warke <nwarke@protonmail.com>",
-  "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -11,9 +11,13 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0-rc.1",
+    "@fortawesome/fontawesome-free": "^5.2.0",
     "register-service-worker": "^1.0.0",
+    "roboto-fontface": "*",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
+    "vuetify": "^1.2.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -26,6 +30,7 @@
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
+    "vue-cli-plugin-vuetify": "^0.2.0",
     "vue-template-compiler": "^2.5.17"
   }
 }

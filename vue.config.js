@@ -8,11 +8,5 @@ module.exports = {
       // swSrc is required in InjectManifest mode.
       swSrc: path.join('src', 'service-worker.js')
     }
-  },
-  devServer: {
-    proxy:
-      process.env.NODE_ENV === 'production'
-        ? 'https://aida-server.herokuapp.com/'
-        : 'http://localhost:3000'
   }
 };

@@ -8,7 +8,6 @@
           <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
         </v-btn>
       </v-flex>
-      <div> <img src="http://bdc22349.ngrok.io/video_feed" ></div>
     </v-layout>
     <v-snackbar :color="snackColor" v-model="snackbar">
       {{ snackText }}

@@ -1,27 +1,17 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import 'vuetify/dist/vuetify.min.css';
-import Vuetify from 'vuetify';
+import '@babel/polyfill';
+import 'roboto-fontface/css/roboto/roboto-fontface.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 import Vue from 'vue';
-import App from './App';
-
-Vue.use(Vuetify, {
-  theme: {
-    primary: '#616161',
-    secondary: '#424242',
-    accent: '#82B1FF',
-    error: '#FF5252',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FFC107'
-  }
-});
+import './plugins/vuetify';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import './registerServiceWorker';
 
 Vue.config.productionTip = false;
 
-/* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  components: { App },
-  template: '<App/>'
-});
+  router,
+  store,
+  render: h => h(App)
+}).$mount('#app');

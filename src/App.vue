@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import Home from './components/Home';
-import Login from './components/Login';
+import Home from './views/Home';
+import Login from './views/Login';
 import { httpClient } from './http';
 
 export default {

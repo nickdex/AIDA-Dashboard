@@ -18,7 +18,7 @@
 
 <script>
 import { httpClient } from '../http';
-import Spinner from './Spinner';
+import Spinner from '../components/Spinner';
 
 export default {
   computed: {

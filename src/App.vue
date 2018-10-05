@@ -9,13 +9,12 @@
       <v-btn flat icon @click="refresh()">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
-      <v-btn flat icon :color="isOnline?'green':'red'">
+      <v-btn flat icon :color="isOnline ? 'green':'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
     </v-toolbar>
     <v-content>
-      <Login v-if="!isLoggedIn" @login="loggedIn" />
-      <Home v-else ref="home" @loaded="online" @lost="offline"/>
+      <router-view></router-view>
     </v-content>
     <v-footer :fixed="fixed" app>
       <v-spacer></v-spacer>
@@ -31,13 +30,12 @@ import Login from './views/Login';
 import { httpClient } from './http';
 
 export default {
+  computed: {
+    isOnline() {
+      return this.$store.state.isOnline;
+    }
+  },
   methods: {
-    online() {
-      this.isOnline = true;
-    },
-    offline() {
-      this.isOnline = false;
-    },
     refresh() {
       this.$refs.home.refreshValues();
     },
@@ -129,7 +127,6 @@ export default {
     return {
       fixed: false,
       title: 'AIDA Dashboard',
-      isOnline: false,
       isLoggedIn: false,
       isSubscribed: false,
       username: '',

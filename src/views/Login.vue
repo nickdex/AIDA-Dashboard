@@ -49,7 +49,9 @@ export default {
         localStorage.setItem('username', this.username);
         localStorage.setItem('clientName', this.clientName);
         localStorage.setItem('deviceType', this.deviceType);
-        this.$emit('login');
+
+        this.$store.commit('online');
+        this.$router.push('/home');
       } catch (error) {
         console.error(error);
       }

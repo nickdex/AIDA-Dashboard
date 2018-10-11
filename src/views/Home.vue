@@ -18,7 +18,7 @@
 
 <script>
 import { httpClient } from '../http';
-import Spinner from './Spinner';
+import Spinner from '../components/Spinner';
 
 export default {
   computed: {
@@ -42,6 +42,8 @@ export default {
           }
         );
         if (result.status === 200) {
+          this.$store.commit('online');
+
           const resultDevice = result.data;
           const toggleDevice = this.devices[resultDevice.pin];
           toggleDevice.isOn = resultDevice.isOn;
@@ -50,7 +52,7 @@ export default {
       } catch (error) {
         this.devices[device.pin].reqFlag = false;
         this.showSnackBar('error', error.message);
-        this.$emit('lost');
+        this.$store.commit('offline');
       }
     },
     showSnackBar(color, text) {
@@ -68,7 +70,7 @@ export default {
             localDevice.name = serverDevice.name;
             localDevice.room = serverDevice.room;
           });
-          this.$emit('loaded');
+          this.$store.commit('online');
         });
     }
   },

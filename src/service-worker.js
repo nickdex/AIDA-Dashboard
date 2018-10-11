@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 self.addEventListener('push', event => {
   console.info('Push received');
 
@@ -38,5 +37,3 @@ self.addEventListener('notificationclick', event => {
       .catch(err => console.error(err));
   }
 });
-
-/* eslint-disable no-console */

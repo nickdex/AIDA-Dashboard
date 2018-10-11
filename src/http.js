@@ -5,7 +5,7 @@ export const kvHttp = axios.create({
 });
 
 export const httpClient = axios.create({
-  baseURL: process.env.SERVER_URL
+  baseURL: process.env.VUE_APP_SERVER_URL
 });
 
 export const all = requests => axios.all(requests);

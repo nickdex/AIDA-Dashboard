@@ -17,7 +17,8 @@ export default new Router({
     {
       path: '/home',
       name: 'home',
-      component: Home
+      component: Home,
+      props: { fromLogin: true }
     }
   ]
 });

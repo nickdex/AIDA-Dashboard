@@ -104,7 +104,13 @@ export default {
     }
   }),
   created() {
-    this.refreshValues();
+    if (!this.fromLogin) this.refreshValues();
+  },
+  props: {
+    fromLogin: {
+      type: Boolean,
+      default: false
+    }
   },
   components: {
     Spinner

@@ -51,10 +51,16 @@ export default {
         localStorage.setItem('deviceType', this.deviceType);
 
         this.$store.commit('online');
-        this.$router.push('/home');
+        this.$router.replace('/home');
       } catch (error) {
         console.error(error);
       }
+    }
+  },
+  created() {
+    if (localStorage.getItem('username')) {
+      console.log('we have username');
+      this.$router.replace('/home?fromLogin=true');
     }
   }
 };

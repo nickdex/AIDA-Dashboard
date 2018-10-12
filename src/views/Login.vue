@@ -60,7 +60,7 @@ export default {
   created() {
     if (localStorage.getItem('username')) {
       console.log('we have username');
-      this.$router.replace('/home?fromLogin=true');
+      this.$router.replace('/home');
     }
   }
 };

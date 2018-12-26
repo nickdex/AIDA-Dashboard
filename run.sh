@@ -1,0 +1,1 @@
+docker run -d --name dashboard --network aidanetwork -p 3001:8080 --env VUE_APP_SERVER_URL=http://localhost:3000  nickdex/aida-dashboard

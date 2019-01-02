@@ -56,3 +56,6 @@ dist/
 
 # Yarn Integrity file
 .yarn-integrity
+
+# QEMU binary for arm arch, for rpi docker builds
+qemu-arm-static

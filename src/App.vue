@@ -4,12 +4,12 @@
       <v-toolbar-title v-text="isLoggedIn ? username : title" />
       <v-spacer />
       <v-btn flat icon @click="subscribe()">
-        <v-icon>fas {{isSubscribed ? 'fa-bell-slash' : 'fa-bell'}}</v-icon>
+        <v-icon>fas {{ isSubscribed ? 'fa-bell-slash' : 'fa-bell' }}</v-icon>
       </v-btn>
       <v-btn flat icon @click="refresh()">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
-      <v-btn flat icon :color="isOnline ? 'green':'red'">
+      <v-btn flat icon :color="isOnline ? 'green' : 'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
     </v-toolbar>

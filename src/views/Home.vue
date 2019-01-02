@@ -1,9 +1,20 @@
 <template>
   <v-container fluid fill-height>
     <v-layout wrap align-center>
-      <v-flex xs12 sm4 md4 v-for="device in getDevicesArray" :key="device.pin" text-xs-center>
-        <v-btn :loading="device.reqFlag" @click.native="toggleState(device)" large 
-          :color="colorStyle(device.isOn)">
+      <v-flex
+        xs12
+        sm4
+        md4
+        v-for="device in getDevicesArray"
+        :key="device.pin"
+        text-xs-center
+      >
+        <v-btn
+          :loading="device.reqFlag"
+          @click.native="toggleState(device)"
+          large
+          :color="colorStyle(device.isOn)"
+        >
           {{ device.displayName }}
           <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
         </v-btn>
@@ -11,7 +22,7 @@
     </v-layout>
     <v-snackbar :color="snackColor" v-model="snackbar">
       {{ snackText }}
-    <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+      <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
     </v-snackbar>
   </v-container>
 </template>

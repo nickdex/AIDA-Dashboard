@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import { httpClient } from '../http';
 import Spinner from '../components/Spinner';
 
 export default {
@@ -43,19 +42,17 @@ export default {
     async toggleState(device) {
       try {
         this.devices[device.pin].reqFlag = true;
-        const result = await httpClient.patch(
-          `/devices/${device.name}?username=${localStorage.getItem(
-            'username'
-          )}&room=${device.room}`,
-          {
+        const result = await this.$feathers
+          .service('devices')
+          .patch(device.name, {
             isOn: !device.isOn,
             pin: device.pin
-          }
-        );
-        if (result.status === 200) {
-          this.$store.commit('online');
+          });
 
-          const resultDevice = result.data;
+        if (result != null) {
+          this.$store.commit('online');
+          console.log(result);
+          const resultDevice = result;
           const toggleDevice = this.devices[resultDevice.pin];
           toggleDevice.isOn = resultDevice.isOn;
           toggleDevice.reqFlag = false;
@@ -72,10 +69,11 @@ export default {
       this.snackText = text;
     },
     refreshValues() {
-      httpClient
-        .get(`/devices?username=${localStorage.getItem('username')}`)
+      this.$feathers
+        .service('devices')
+        .find()
         .then(result => {
-          result.data.forEach(serverDevice => {
+          result.forEach(serverDevice => {
             const localDevice = this.devices[serverDevice.pin];
             localDevice.isOn = serverDevice.isOn;
             localDevice.name = serverDevice.name;

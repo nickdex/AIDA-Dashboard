@@ -1,5 +1,7 @@
 import '@babel/polyfill';
 import Vue from 'vue';
+import feathers from '@feathersjs/client';
+
 import './plugins/vuetify';
 import App from './App.vue';
 import router from './router';
@@ -8,7 +10,12 @@ import './registerServiceWorker';
 
 Vue.config.productionTip = false;
 
-new Vue({
+var app = feathers();
+app.configure(feathers.rest().fetch(window.fetch));
+
+Vue.prototype.$feathers = app;
+
+window.vueInstance = new Vue({
   router,
   store,
   render: h => h(App)

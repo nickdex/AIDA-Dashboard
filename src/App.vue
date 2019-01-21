@@ -27,7 +27,6 @@
 <script>
 import Home from './views/Home';
 import Login from './views/Login';
-import { httpClient } from './http';
 
 export default {
   computed: {
@@ -63,26 +62,25 @@ export default {
     },
     async setSubscriptionState() {
       try {
-        const result = await httpClient.get(
-          `/clients/${localStorage.getItem('clientName')}?username=${
-            this.username
-          }&deviceType=${localStorage.getItem('deviceType')}`
-        );
-        if (result && result.data) {
-          this.isSubscribed = !!result.data.subscriptionToken;
+        const result = await this.$feathers
+          .service('clients')
+          .get(localStorage.getItem('clientName'), {
+            query: { username: this.username }
+          });
+        if (result != null) {
+          this.isSubscribed = !!result.subscriptionToken;
         }
       } catch (error) {
         console.warn('Backend not available', error);
       }
     },
     sendSubscriptionToServer(subscription) {
-      return httpClient.patch(
-        `/clients/${localStorage.getItem('clientName')}?username=${
-          this.username
-        }&deviceType=${localStorage.getItem('deviceType')}`,
+      return this.$feathers.service('clients').patch(
+        localStorage.getItem('clientName'),
         {
           subscriptionToken: subscription.toJSON()
-        }
+        },
+        { query: { username: this.username } }
       );
     },
     async registerForPush() {

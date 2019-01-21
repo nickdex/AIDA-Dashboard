@@ -8,5 +8,6 @@ module.exports = {
       // swSrc is required in InjectManifest mode.
       swSrc: path.join('src', 'service-worker.js')
     }
-  }
+  },
+  devServer: { proxy: 'http://localhost:3000' }
 };

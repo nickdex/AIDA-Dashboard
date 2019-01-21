@@ -1,8 +1,8 @@
 <template>
-    <v-container fluid fill-height>
-        <v-layout align-center justify-center row>
-            <v-flex xs12 sm6 md4>
-                <v-text-field label="Username" autofocus dark v-model="username" />
+  <v-container fluid fill-height>
+    <v-layout align-center justify-center row>
+      <v-flex xs12 sm6 md4>
+        <v-text-field label="Username" autofocus dark v-model="username" />
         <v-text-field label="Client Name" dark v-model="clientName" />
         <v-select
           label="Client Device Type"
@@ -10,14 +10,12 @@
           :items="deviceTypes"
           v-model="deviceType"
         />
-                <v-btn @click="submit">Submit</v-btn>
-            </v-flex>
-        </v-layout>
-    </v-container>
+        <v-btn @click="submit">Submit</v-btn>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 <script>
-import { httpClient } from '../http';
-
 export default {
   data: () => ({
     username: '',
@@ -41,24 +39,23 @@ export default {
       }
 
       try {
-        const result = await httpClient.post(
-          `/clients?username=${this.username}`,
+        const result = await this.$feathers.service('clients').create(
           {
             name: this.clientName,
             deviceType: this.deviceType
-          }
+          },
+          { query: { username: this.username } }
         );
-
-        if (result.status !== 201) console.error(result.statusText);
+        if (result == null) throw new Error('Client could not be created');
 
         localStorage.setItem('username', this.username);
-        localStorage.setItem('clientName', this.clientName);
-        localStorage.setItem('deviceType', this.deviceType);
+        localStorage.setItem('clientName', result.name);
+        localStorage.setItem('deviceType', result.deviceType);
 
         this.$store.commit('online');
         this.$router.replace('/home');
       } catch (error) {
-        console.error(error);
+        console.error('Failed to login', error);
       }
     }
   },

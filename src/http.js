@@ -1,9 +1,5 @@
 import axios from 'axios';
 
-export const kvHttp = axios.create({
-  baseURL: 'https://api.keyvalue.xyz/'
-});
-
 export const httpClient = axios.create({
   baseURL: process.env.VUE_APP_SERVER_URL
 });

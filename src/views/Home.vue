@@ -1,64 +1,72 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout wrap align-center>
-      <v-flex
-        xs12
-        sm4
-        md4
-        v-for="device in getDevicesArray"
-        :key="device.pin"
-        text-xs-center
-      >
-        <v-btn
-          :loading="device.reqFlag"
-          @click.native="toggleState(device)"
-          large
-          :color="colorStyle(device.isOn)"
-        >
-          {{ device.displayName }}
-          <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
-        </v-btn>
+    <v-layout column>
+      <v-flex>
+        <v-select
+          :items="deviceGroups"
+          :item-text="x => x.name"
+          :item-value="x => x._id"
+          label="Group"
+          v-model="groupId"
+        ></v-select>
+      </v-flex>
+      <v-flex d-flex>
+        <v-layout wrap justify-center>
+          <v-flex
+            xs8
+            d-flex
+            sm4
+            v-for="device in devicesArray"
+            :key="device._id"
+          >
+            <v-btn
+              :loading="device.reqFlag"
+              @click.native="toggleState(device)"
+              large
+              :color="colorStyle(device.isOn)"
+            >
+              {{ device.displayName }}
+              <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
+            </v-btn>
+          </v-flex>
+        </v-layout>
+        <v-snackbar :color="snackColor" v-model="snackbar">
+          {{ snackText }}
+          <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+        </v-snackbar>
       </v-flex>
     </v-layout>
-    <v-snackbar :color="snackColor" v-model="snackbar">
-      {{ snackText }}
-      <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex';
+
 import Spinner from '../components/Spinner';
+import { DEVICE_GROUP_ID } from '../mutation-types';
 
 export default {
   computed: {
-    getDevicesArray() {
-      return Object.values(this.devices);
+    ...mapGetters(['devicesArray']),
+    ...mapState(['deviceGroups']),
+    groupId: {
+      get() {
+        return this.$store.state.deviceGroupId;
+      },
+      set(value) {
+        this.$store.commit(DEVICE_GROUP_ID, value);
+        this.$store.dispatch('updateDevices', value);
+      }
     }
   },
   methods: {
     colorStyle: isOn => (isOn ? 'success' : 'error'),
     iconStyle: isOn => (isOn ? 'fa-toggle-on' : 'fa-toggle-off'),
     async toggleState(device) {
+      this.$store.dispatch('toggleDeviceLoading', device._id);
       try {
-        this.devices[device.pin].reqFlag = true;
-        const result = await this.$feathers
-          .service('devices')
-          .patch(device.name, {
-            isOn: !device.isOn,
-            pin: device.pin
-          });
-
-        if (result != null) {
-          this.$store.commit('online');
-          console.log(result);
-          const resultDevice = result;
-          const toggleDevice = this.devices[resultDevice.pin];
-          toggleDevice.isOn = resultDevice.isOn;
-          toggleDevice.reqFlag = false;
-        } else throw Error('Request Failed');
+        await this.$store.dispatch('updateDevice', { device });
       } catch (error) {
-        this.devices[device.pin].reqFlag = false;
         this.showSnackBar('error', error.message);
         this.$store.commit('offline');
       }
@@ -67,20 +75,6 @@ export default {
       this.snackbar = true;
       this.snackColor = color;
       this.snackText = text;
-    },
-    refreshValues() {
-      this.$feathers
-        .service('devices')
-        .find()
-        .then(result => {
-          result.forEach(serverDevice => {
-            const localDevice = this.devices[serverDevice.pin];
-            localDevice.isOn = serverDevice.isOn;
-            localDevice.name = serverDevice.name;
-            localDevice.room = serverDevice.room;
-          });
-          this.$store.commit('online');
-        });
     }
   },
   data: () => ({
@@ -88,33 +82,8 @@ export default {
     snackColor: 'success',
     snackText: '',
     isLocal: true,
-    devices: {
-      4: {
-        pin: 4,
-        name: 'fan',
-        isOn: false,
-        displayName: 'Fan',
-        reqFlag: false
-      },
-      2: {
-        pin: 2,
-        name: 'lights',
-        isOn: false,
-        displayName: 'Room Lights',
-        reqFlag: false
-      },
-      5: {
-        pin: 5,
-        name: 'outdoor',
-        isOn: false,
-        displayName: 'Outdoor Lights',
-        reqFlag: false
-      }
-    }
+    _groupId: ''
   }),
-  created() {
-    this.refreshValues();
-  },
   components: {
     Spinner
   }

@@ -6,7 +6,7 @@
       <v-btn flat icon @click="subscribe()">
         <v-icon>fas {{ isSubscribed ? 'fa-bell-slash' : 'fa-bell' }}</v-icon>
       </v-btn>
-      <v-btn flat icon @click="refresh()">
+      <v-btn flat icon @click="$store.dispatch('refreshGroups')">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
       <v-btn flat icon :color="isOnline ? 'green' : 'red'">
@@ -32,12 +32,12 @@ export default {
   computed: {
     isOnline() {
       return this.$store.state.isOnline;
+    },
+    groupId() {
+      return this.$store.state.groupId;
     }
   },
   methods: {
-    refresh() {
-      this.$refs.home.refreshValues();
-    },
     loggedIn() {
       this.username = localStorage.getItem(this.usernameKey);
       this.isLoggedIn = true;
@@ -130,6 +130,11 @@ export default {
       username: '',
       usernameKey: 'username'
     };
+  },
+  mounted() {
+    if (this.$store.groups == null || this.$store.devices == null) {
+      this.$store.dispatch('refreshGroups');
+    }
   },
   name: 'App',
   components: {

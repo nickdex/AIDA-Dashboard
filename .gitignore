@@ -59,3 +59,6 @@ dist/
 
 # QEMU binary for arm arch, for rpi docker builds
 qemu-arm-static
+
+# Local Environment files
+*.local

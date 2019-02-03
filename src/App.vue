@@ -132,7 +132,10 @@ export default {
     };
   },
   mounted() {
-    if (this.$store.groups == null || this.$store.devices == null) {
+    if (
+      this.$store.isOnline &&
+      (this.$store.groups == null || this.$store.devices == null)
+    ) {
       this.$store.dispatch('refreshGroups');
     }
   },

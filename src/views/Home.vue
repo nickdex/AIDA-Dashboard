@@ -43,7 +43,7 @@
 import { mapGetters, mapState } from 'vuex';
 
 import Spinner from '../components/Spinner';
-import { DEVICE_GROUP_ID } from '../mutation-types';
+import { DEVICE_GROUP_ID, OFFLINE } from '../mutation-types';
 
 export default {
   computed: {
@@ -68,7 +68,7 @@ export default {
         await this.$store.dispatch('updateDevice', { device });
       } catch (error) {
         this.showSnackBar('error', error.message);
-        this.$store.commit('offline');
+        this.$store.commit(OFFLINE);
       }
     },
     showSnackBar(color, text) {
@@ -84,6 +84,11 @@ export default {
     isLocal: true,
     _groupId: ''
   }),
+  mounted() {
+    if (this.$store.groups == null || this.$store.devices == null) {
+      this.$store.dispatch('refreshGroups');
+    }
+  },
   components: {
     Spinner
   }

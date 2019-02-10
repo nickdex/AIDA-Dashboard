@@ -131,14 +131,6 @@ export default {
       usernameKey: 'username'
     };
   },
-  mounted() {
-    if (
-      this.$store.isOnline &&
-      (this.$store.groups == null || this.$store.devices == null)
-    ) {
-      this.$store.dispatch('refreshGroups');
-    }
-  },
   name: 'App',
   components: {
     Login,

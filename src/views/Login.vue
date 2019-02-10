@@ -16,6 +16,8 @@
   </v-container>
 </template>
 <script>
+import { ONLINE } from '../mutation-types';
+
 export default {
   data: () => ({
     username: '',
@@ -52,7 +54,7 @@ export default {
         localStorage.setItem('clientName', result.name);
         localStorage.setItem('deviceType', result.deviceType);
 
-        this.$store.commit('online');
+        this.$store.commit(ONLINE);
         this.$router.replace('/home');
       } catch (error) {
         console.error('Failed to login', error);

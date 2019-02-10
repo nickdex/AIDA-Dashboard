@@ -2,8 +2,6 @@ FROM node
 
 WORKDIR /app
 
-RUN yarn global add http-server
-
 # Copy cache contents (if any) from local machine
 # postcss config is needed at same level as node_modules for vue-cli to work
 ADD .yarn-cache.tgz package.json yarn.lock /
@@ -17,6 +15,8 @@ ADD . /app
 COPY postcss.config.js /
 
 RUN yarn build
+
+RUN yarn global add http-server
 
 EXPOSE 80
 

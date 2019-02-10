@@ -1,1 +1,1 @@
-docker run -d --name dashboard --network aidanetwork -p 80:8080 --env VUE_APP_SERVER_URL nickdex/aida-dashboard
+docker run -d --name=dashboard --net=aidanet --restart=always -p 80:80 nickdex/aida-dashboard

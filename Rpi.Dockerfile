@@ -16,6 +16,10 @@ COPY postcss.config.js /
 
 ADD . /app
 
-EXPOSE 8080
+RUN yarn build
 
-CMD [ "yarn", "serve" ]
+RUN yarn global add http-server
+
+EXPOSE 80
+
+CMD [ "http-server", "-p", "80", "-P", "http://server", "dist" ]

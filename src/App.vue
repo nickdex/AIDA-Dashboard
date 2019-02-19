@@ -4,12 +4,12 @@
       <v-toolbar-title v-text="isLoggedIn ? username : title" />
       <v-spacer />
       <v-btn flat icon @click="subscribe()">
-        <v-icon>fas {{isSubscribed ? 'fa-bell-slash' : 'fa-bell'}}</v-icon>
+        <v-icon>fas {{ isSubscribed ? 'fa-bell-slash' : 'fa-bell' }}</v-icon>
       </v-btn>
-      <v-btn flat icon @click="refresh()">
+      <v-btn flat icon @click="$store.dispatch('refreshGroups')">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
-      <v-btn flat icon :color="isOnline ? 'green':'red'">
+      <v-btn flat icon :color="isOnline ? 'green' : 'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
     </v-toolbar>
@@ -27,18 +27,17 @@
 <script>
 import Home from './views/Home';
 import Login from './views/Login';
-import { httpClient } from './http';
 
 export default {
   computed: {
     isOnline() {
       return this.$store.state.isOnline;
+    },
+    groupId() {
+      return this.$store.state.groupId;
     }
   },
   methods: {
-    refresh() {
-      this.$refs.home.refreshValues();
-    },
     loggedIn() {
       this.username = localStorage.getItem(this.usernameKey);
       this.isLoggedIn = true;
@@ -63,26 +62,25 @@ export default {
     },
     async setSubscriptionState() {
       try {
-        const result = await httpClient.get(
-          `/clients/${localStorage.getItem('clientName')}?username=${
-            this.username
-          }&deviceType=${localStorage.getItem('deviceType')}`
-        );
-        if (result && result.data) {
-          this.isSubscribed = !!result.data.subscriptionToken;
+        const result = await this.$feathers
+          .service('clients')
+          .get(localStorage.getItem('clientName'), {
+            query: { username: this.username }
+          });
+        if (result != null) {
+          this.isSubscribed = !!result.subscriptionToken;
         }
       } catch (error) {
         console.warn('Backend not available', error);
       }
     },
     sendSubscriptionToServer(subscription) {
-      return httpClient.patch(
-        `/clients/${localStorage.getItem('clientName')}?username=${
-          this.username
-        }&deviceType=${localStorage.getItem('deviceType')}`,
+      return this.$feathers.service('clients').patch(
+        localStorage.getItem('clientName'),
         {
           subscriptionToken: subscription.toJSON()
-        }
+        },
+        { query: { username: this.username } }
       );
     },
     async registerForPush() {

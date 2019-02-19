@@ -6,7 +6,6 @@ import Login from './views/Login.vue';
 Vue.use(Router);
 
 export default new Router({
-  mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
@@ -18,6 +17,10 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: Home
+    },
+    {
+      path: '*',
+      component: Login
     }
   ]
 });

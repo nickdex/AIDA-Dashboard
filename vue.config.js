@@ -9,5 +9,5 @@ module.exports = {
       swSrc: path.join('src', 'service-worker.js')
     }
   },
-  devServer: { proxy: 'http://localhost:3000' }
+  devServer: { proxy: process.env.SERVER_URL }
 };

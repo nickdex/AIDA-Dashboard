@@ -2,14 +2,28 @@
   <v-container fluid fill-height>
     <v-layout column>
       <v-flex>
-        <v-select
-          :items="deviceGroups"
-          :item-text="x => x.name"
-          :item-value="x => x._id"
-          label="Group"
-          v-model="groupId"
-        ></v-select>
+        <v-layout row wrap justify-space-around>
+          <v-flex d-flex mx-2>
+            <v-select
+              :items="deviceGroups"
+              :item-text="x => x.name"
+              :item-value="x => x._id"
+              label="Group"
+              v-model="groupId"
+            ></v-select>
+          </v-flex>
+          <v-flex d-flex mx-2>
+            <v-select
+              :items="rooms"
+              :item-text="x => x.name"
+              :item-value="x => x._id"
+              label="Room"
+              v-model="roomId"
+            ></v-select>
+          </v-flex>
+        </v-layout>
       </v-flex>
+
       <v-flex d-flex>
         <v-layout wrap justify-center>
           <v-flex
@@ -43,19 +57,28 @@
 import { mapGetters, mapState } from 'vuex';
 
 import Spinner from '../components/Spinner';
-import { DEVICE_GROUP_ID, OFFLINE } from '../mutation-types';
+import { DEVICE_GROUP_ID, OFFLINE, ROOM_ID } from '../mutation-types';
 
 export default {
   computed: {
     ...mapGetters(['devicesArray']),
-    ...mapState(['deviceGroups']),
+    ...mapState(['deviceGroups', 'rooms']),
     groupId: {
       get() {
         return this.$store.state.deviceGroupId;
       },
       set(value) {
         this.$store.commit(DEVICE_GROUP_ID, value);
-        this.$store.dispatch('updateDevices', value);
+        this.$store.dispatch('updateRooms');
+      }
+    },
+    roomId: {
+      get() {
+        return this.$store.state.roomId;
+      },
+      set(value) {
+        this.$store.commit(ROOM_ID, value);
+        this.$store.dispatch('updateDevices');
       }
     }
   },
@@ -86,7 +109,7 @@ export default {
     _groupId: ''
   }),
   mounted() {
-    if (this.$store.groups == null || this.$store.devices == null) {
+    if (this.deviceGroups.length == 0) {
       this.$store.dispatch('refreshGroups');
     }
   },

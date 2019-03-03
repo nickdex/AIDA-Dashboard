@@ -41,18 +41,34 @@ export default {
       }
 
       try {
-        const result = await this.$feathers.service('clients').create(
-          {
+        let clientId = await this.$feathers.service('clients').find({
+          query: {
+            userId: this.username,
             name: this.clientName,
             deviceType: this.deviceType
-          },
-          { query: { username: this.username } }
-        );
-        if (result == null) throw new Error('Client could not be created');
+          }
+        });
+
+        let client;
+        if (clientId == undefined) {
+          client = await this.$feathers.service('clients').create(
+            {
+              name: this.clientName,
+              deviceType: this.deviceType
+            },
+            { query: { username: this.username } }
+          );
+
+          if (client == undefined)
+            throw new Error('Client could not be created');
+        } else {
+          client = await this.$feathers.service('clients').get(clientId);
+        }
 
         localStorage.setItem('username', this.username);
-        localStorage.setItem('clientName', result.name);
-        localStorage.setItem('deviceType', result.deviceType);
+        localStorage.setItem('clientId', client._id);
+        localStorage.setItem('clientName', client.name);
+        localStorage.setItem('deviceType', client.deviceType);
 
         this.$store.commit(ONLINE);
         this.$router.replace('/home');

@@ -62,13 +62,11 @@ export default {
     },
     async setSubscriptionState() {
       try {
-        const result = await this.$feathers
+        const client = await this.$feathers
           .service('clients')
-          .get(localStorage.getItem('clientName'), {
-            query: { username: this.username }
-          });
-        if (result != null) {
-          this.isSubscribed = !!result.subscriptionToken;
+          .get(localStorage.getItem('clientId'));
+        if (client != null) {
+          this.isSubscribed = !!client.subscriptionToken;
         }
       } catch (error) {
         console.warn('Backend not available', error);

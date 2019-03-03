@@ -68,6 +68,7 @@ export default {
         await this.$store.dispatch('updateDevice', { device });
       } catch (error) {
         this.showSnackBar('error', error.message);
+        this.$store.dispatch('toggleDeviceLoading', device._id);
         this.$store.commit(OFFLINE);
       }
     },

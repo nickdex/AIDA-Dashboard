@@ -17,6 +17,7 @@
 </template>
 <script>
 import { ONLINE } from '../mutation-types';
+import lodash from 'lodash';
 
 export default {
   data: () => ({
@@ -39,22 +40,22 @@ export default {
         console.warn('Select a device type');
         return;
       }
-
+      const deviceType = lodash.toUpper(this.deviceType);
       try {
         let clientId = await this.$feathers.service('clients').find({
           query: {
             userId: this.username,
             name: this.clientName,
-            deviceType: this.deviceType
+            deviceType
           }
         });
 
         let client;
-        if (clientId == undefined) {
+        if (lodash.isEmpty(clientId)) {
           client = await this.$feathers.service('clients').create(
             {
               name: this.clientName,
-              deviceType: this.deviceType
+              deviceType
             },
             { query: { username: this.username } }
           );

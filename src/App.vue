@@ -1,21 +1,31 @@
 <template>
   <v-app dark>
-    <v-toolbar app text-xs-center>
+    <v-toolbar app tabs text-xs-center>
       <v-toolbar-title v-text="isLoggedIn ? username : title" />
       <v-spacer />
-      <v-btn flat icon @click="subscribe()">
+
+      <v-btn icon @click="subscribe()">
         <v-icon>fas {{ isSubscribed ? 'fa-bell-slash' : 'fa-bell' }}</v-icon>
       </v-btn>
-      <v-btn flat icon @click="$store.dispatch('refreshGroups')">
+      <v-btn icon @click="$store.dispatch('refreshGroups')">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
       <v-btn flat icon :color="isOnline ? 'green' : 'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
+
+      <template v-slot:extension>
+        <v-tabs dark grow color="transparent" v-model="tab">
+          <v-tab to="home">Home</v-tab>
+          <v-tab to="admin">Admin</v-tab>
+        </v-tabs>
+      </template>
     </v-toolbar>
+
     <v-content>
       <router-view></router-view>
     </v-content>
+
     <v-footer :fixed="fixed" app>
       <v-spacer></v-spacer>
       <span>Made with ♥ in India</span>
@@ -123,7 +133,9 @@ export default {
       isLoggedIn: false,
       isSubscribed: false,
       username: '',
-      usernameKey: 'username'
+      usernameKey: 'username',
+      tabs: ['Home', 'Admin'],
+      tab: 'Home'
     };
   },
   name: 'App',

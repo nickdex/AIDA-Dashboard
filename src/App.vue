@@ -1,7 +1,35 @@
 <template>
   <v-app dark>
-    <v-toolbar app tabs text-xs-center>
-      <v-toolbar-title v-text="isLoggedIn ? username : title" />
+    <v-navigation-drawer app v-model="drawer">
+      <v-toolbar flat>
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-title class="title" to="route">
+              {{ isLoggedIn ? username : title }}
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
+      <v-divider></v-divider>
+
+      <v-list>
+        <v-list-tile v-for="item in routes" :key="item.title" :to="item.route">
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar app text-xs-center>
+      <v-btn flat icon @click="drawer = !drawer">
+        <v-icon>fas fa-bars</v-icon>
+      </v-btn>
+      <v-toolbar-title>AIDA</v-toolbar-title>
       <v-spacer />
 
       <v-btn icon @click="subscribe()">
@@ -13,13 +41,6 @@
       <v-btn flat icon :color="isOnline ? 'green' : 'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
-
-      <template v-slot:extension>
-        <v-tabs dark grow color="transparent" v-model="tab">
-          <v-tab to="home">Home</v-tab>
-          <v-tab to="admin">Admin</v-tab>
-        </v-tabs>
-      </template>
     </v-toolbar>
 
     <v-content>
@@ -134,10 +155,21 @@ export default {
       isSubscribed: false,
       username: '',
       usernameKey: 'username',
-      tabs: ['Home', 'Admin'],
-      tab: 'Home'
+      drawer: false,
+      routes: [
+        {
+          title: 'Home',
+          route: 'home',
+          icon: 'fas fa-home'
+        },
+        {
+          title: 'Admin',
+          route: 'admin',
+          icon: 'fas fa-user-shield'
+        }
+      ]
     };
   },
-  name: 'App',
+  name: 'App'
 };
 </script>

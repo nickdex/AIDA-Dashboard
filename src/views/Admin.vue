@@ -6,7 +6,9 @@
           <template v-slot:header>
             <div>IotDevice</div>
           </template>
-          <v-card> </v-card>
+          <v-card>
+            <iot-device />
+          </v-card>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-layout>
@@ -14,8 +16,12 @@
 </template>
 
 <script>
+import IotDevice from '../components/IotDevice';
+
 export default {
-  components: {},
+  components: {
+    IotDevice
+  },
   data() {
     return {
       entities: [

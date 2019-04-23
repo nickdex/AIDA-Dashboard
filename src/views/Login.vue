@@ -41,17 +41,20 @@ export default {
         return;
       }
       const deviceType = lodash.toUpper(this.deviceType);
+
       try {
-        let clientId = await this.$feathers.service('clients').find({
+        const clients = await this.$feathers.service('clients').find({
           query: {
             userId: this.username,
             name: this.clientName,
             deviceType
           }
         });
+        let client = lodash.first(clients);
 
-        let client;
-        if (lodash.isEmpty(clientId)) {
+        const clientId = client._id;
+
+        if (!client) {
           client = await this.$feathers.service('clients').create(
             {
               name: this.clientName,

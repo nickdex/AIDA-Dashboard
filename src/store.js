@@ -59,10 +59,10 @@ export default new Vuex.Store({
         });
     },
     updateRooms({ commit, dispatch, state }) {
-      const groupId = state.groupId;
+      const deviceGroupId = state.deviceGroupId;
       this._vm.$feathers
         .service('rooms')
-        .find({ query: { groupId } })
+        .find({ query: { deviceGroupId } })
         .then(rooms => {
           commit(types.ROOM_ID, rooms[0]._id);
           commit(types.ROOMS, rooms);
@@ -80,7 +80,10 @@ export default new Vuex.Store({
         .then(agentIds => {
           return this._vm.$feathers
             .service('devices')
-            .find({ query: { agentId: { $in: [...agentIds] } } });
+            .find({ query: { agentId: { $in: agentIds } } })
+            .then(devices => {
+              return devices.filter(d => agentIds.includes(d.agentId));
+            });
         })
         .then(devices => {
           return devices.reduce((obj, item) => {

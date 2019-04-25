@@ -5,15 +5,6 @@
         <v-layout row wrap justify-space-around>
           <v-flex d-flex mx-2>
             <v-select
-              :items="deviceGroups"
-              :item-text="x => x.name"
-              :item-value="x => x._id"
-              label="Group"
-              v-model="groupId"
-            ></v-select>
-          </v-flex>
-          <v-flex d-flex mx-2>
-            <v-select
               :items="rooms"
               :item-text="x => x.name"
               :item-value="x => x._id"
@@ -99,6 +90,10 @@ export default {
       this.snackbar = true;
       this.snackColor = color;
       this.snackText = text;
+    },
+    updateDeviceGroup(deviceId) {
+      this.$store.commit(DEVICE_GROUP_ID, deviceId);
+      this.$store.dispatch('updateRooms');
     }
   },
   data: () => ({
@@ -108,9 +103,21 @@ export default {
     isLocal: true,
     _groupId: ''
   }),
+
+  beforeRouteUpdate(to, from, next) {
+    this.updateDeviceGroup(to.params.id);
+    next();
+  },
   mounted() {
-    if (this.deviceGroups.length == 0) {
-      this.$store.dispatch('refreshGroups');
+    let deviceGroupId = localStorage.getItem('defaultDeviceGroupId');
+    if (deviceGroupId) {
+      this.updateDeviceGroup(deviceGroupId);
+    }
+    if (
+      !this.$store.getters.deviceGroupIds ||
+      this.$store.getters.deviceGroupIds.length == 0
+    ) {
+      this.$store.dispatch('refreshGroups').catch(err => console.error(err));
     }
   },
   components: {

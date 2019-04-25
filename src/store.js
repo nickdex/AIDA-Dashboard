@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import lodash from 'lodash';
 
 import * as types from './mutation-types';
 
@@ -49,7 +50,7 @@ export default new Vuex.Store({
       });
     },
     refreshGroups({ commit, dispatch }) {
-      this._vm.$feathers
+      return this._vm.$feathers
         .service('groups')
         .find()
         .then(deviceGroups => {
@@ -102,6 +103,7 @@ export default new Vuex.Store({
   getters: {
     devicesArray(state) {
       return state.devices == null ? null : Object.values(state.devices);
-    }
+    },
+    deviceGroupIds: state => lodash.map(state.deviceGroups, '_id')
   }
 });

@@ -12,19 +12,34 @@
       </v-toolbar>
 
       <v-divider></v-divider>
-
       <v-list>
-        <v-list-tile v-for="item in routes" :key="item.title" :to="item.route">
+        <v-list-group prepend-icon="fas fa-home" value="true">
+          <template v-slot:activator>
+            <v-list-tile>
+              <v-list-tile-title>Dashboard</v-list-tile-title>
+            </v-list-tile>
+          </template>
+          <v-list-tile
+            v-for="deviceGroup in deviceGroups"
+            :key="deviceGroup._id"
+            :to="'/home/' + deviceGroup._id"
+          >
+            <v-list-tile-title v-text="deviceGroup.name"></v-list-tile-title>
+          </v-list-tile>
+        </v-list-group>
+
+        <v-list-tile to="admin">
           <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>fas fa-user-shield</v-icon>
           </v-list-tile-action>
 
           <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            <v-list-tile-title>Admin</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
+
     <v-toolbar app text-xs-center>
       <v-btn flat icon @click="drawer = !drawer">
         <v-icon>fas fa-bars</v-icon>
@@ -56,8 +71,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   computed: {
+    ...mapState(['deviceGroups']),
     isOnline() {
       return this.$store.state.isOnline;
     },
@@ -157,11 +175,6 @@ export default {
       usernameKey: 'username',
       drawer: false,
       routes: [
-        {
-          title: 'Home',
-          route: 'home',
-          icon: 'fas fa-home'
-        },
         {
           title: 'Admin',
           route: 'admin',

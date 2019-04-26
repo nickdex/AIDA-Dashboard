@@ -75,16 +75,14 @@ export default {
         localStorage.setItem('deviceType', client.deviceType);
 
         this.$store.commit(ONLINE);
-        this.$router.replace('/home');
+
+        await this.$store.dispatch('refreshGroups');
+        const deviceGroupId = lodash.first(this.$store.getters.deviceGroupIds);
+        localStorage.setItem('defaultDeviceGroupId', deviceGroupId);
+        this.$router.replace(`/home/${deviceGroupId}`);
       } catch (error) {
         console.error('Failed to login', error);
       }
-    }
-  },
-  created() {
-    if (localStorage.getItem('username')) {
-      console.log('we have username');
-      this.$router.replace('/home');
     }
   }
 };

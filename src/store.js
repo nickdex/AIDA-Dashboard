@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import lodash from 'lodash';
 
 import * as types from './mutation-types';
 
@@ -48,30 +49,32 @@ export default new Vuex.Store({
         ...result
       });
     },
-    refreshGroups({ commit, dispatch }) {
-      this._vm.$feathers
+    refreshGroups({ commit, dispatch, state }) {
+      return this._vm.$feathers
         .service('groups')
         .find()
         .then(deviceGroups => {
-          commit(types.DEVICE_GROUP_ID, deviceGroups[0]._id);
+          if (!state.deviceGroupId)
+            commit(types.DEVICE_GROUP_ID, lodash.first(deviceGroups)._id);
+
           commit(types.DEVICE_GROUPS, deviceGroups);
-          dispatch('updateRooms');
+          return dispatch('updateRooms');
         });
     },
     updateRooms({ commit, dispatch, state }) {
       const deviceGroupId = state.deviceGroupId;
-      this._vm.$feathers
+      return this._vm.$feathers
         .service('rooms')
         .find({ query: { deviceGroupId } })
         .then(rooms => {
           commit(types.ROOM_ID, rooms[0]._id);
           commit(types.ROOMS, rooms);
-          dispatch('updateDevices');
+          return dispatch('updateDevices');
         });
     },
     updateDevices({ commit, state }) {
       const roomId = state.roomId;
-      this._vm.$feathers
+      return this._vm.$feathers
         .service('agents')
         .find({ query: { roomId, $select: ['_id'] } })
         .then(agentIds => {
@@ -102,6 +105,7 @@ export default new Vuex.Store({
   getters: {
     devicesArray(state) {
       return state.devices == null ? null : Object.values(state.devices);
-    }
+    },
+    deviceGroupIds: state => lodash.map(state.deviceGroups, '_id')
   }
 });

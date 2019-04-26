@@ -1,56 +1,62 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout column>
-      <v-flex>
-        <v-layout row wrap justify-space-around>
-          <v-flex d-flex mx-2>
-            <v-select
-              :items="deviceGroups"
-              :item-text="x => x.name"
-              :item-value="x => x._id"
-              label="Group"
-              v-model="groupId"
-            ></v-select>
-          </v-flex>
-          <v-flex d-flex mx-2>
-            <v-select
-              :items="rooms"
-              :item-text="x => x.name"
-              :item-value="x => x._id"
-              label="Room"
-              v-model="roomId"
-            ></v-select>
-          </v-flex>
-        </v-layout>
-      </v-flex>
+  <div>
+    <v-container v-if="groupLoading">
+      <v-layout>
+        <v-flex d-flex>
+          <spinner />
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <v-tabs v-else fixed-tabs dark show-arrows v-model="selectedRoom">
+      <v-tab v-for="(room, roomIdx) in rooms" :key="roomIdx">
+        {{ room.name }}
+      </v-tab>
 
-      <v-flex d-flex>
-        <v-layout wrap justify-center>
-          <v-flex
-            xs8
-            d-flex
-            sm4
-            v-for="device in devicesArray"
-            :key="device._id"
-          >
-            <v-btn
-              :loading="device.reqFlag"
-              @click.native="toggleState(device)"
-              large
-              :color="colorStyle(device.isOn)"
-            >
-              {{ device.displayName }}
-              <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
-            </v-btn>
-          </v-flex>
-        </v-layout>
-        <v-snackbar :color="snackColor" v-model="snackbar">
-          {{ snackText }}
-          <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
-        </v-snackbar>
-      </v-flex>
-    </v-layout>
-  </v-container>
+      <v-tabs-slider color="yellow"></v-tabs-slider>
+      <v-tabs-items>
+        <v-tab-item v-for="(room, roomIdx) in rooms" :key="roomIdx">
+          <v-container v-if="roomLoading">
+            <v-layout>
+              <v-flex d-flex>
+                <spinner />
+              </v-flex>
+            </v-layout>
+          </v-container>
+          <v-container v-else>
+            <v-layout column>
+              <v-flex d-flex>
+                <v-layout wrap justify-center>
+                  <v-flex
+                    xs8
+                    d-flex
+                    sm4
+                    v-for="device in devicesArray"
+                    :key="device._id"
+                  >
+                    <v-btn
+                      :groupLoading="device.reqFlag"
+                      @click.native="toggleState(device)"
+                      large
+                      :color="colorStyle(device.isOn)"
+                    >
+                      {{ device.displayName }}
+                      <v-icon right>fas {{ iconStyle(device.isOn) }}</v-icon>
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+                <v-snackbar :color="snackColor" v-model="snackbar">
+                  {{ snackText }}
+                  <v-btn dark flat @click.native="snackbar = false"
+                    >Close</v-btn
+                  >
+                </v-snackbar>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-tab-item>
+      </v-tabs-items>
+    </v-tabs>
+  </div>
 </template>
 
 <script>
@@ -62,23 +68,21 @@ import { DEVICE_GROUP_ID, OFFLINE, ROOM_ID } from '../mutation-types';
 export default {
   computed: {
     ...mapGetters(['devicesArray']),
-    ...mapState(['deviceGroups', 'rooms']),
-    groupId: {
+    ...mapState(['rooms']),
+    selectedRoom: {
       get() {
-        return this.$store.state.deviceGroupId;
+        return this.roomTabIndex;
       },
       set(value) {
-        this.$store.commit(DEVICE_GROUP_ID, value);
-        this.$store.dispatch('updateRooms');
-      }
-    },
-    roomId: {
-      get() {
-        return this.$store.state.roomId;
-      },
-      set(value) {
-        this.$store.commit(ROOM_ID, value);
-        this.$store.dispatch('updateDevices');
+        this.roomLoading = true;
+        this.$store.commit(ROOM_ID, this.rooms[value]._id);
+        this.$store
+          .dispatch('updateDevices')
+          .catch(err => console.error(err))
+          .then(() => {
+            this.roomLoading = false;
+            this.roomTabIndex = value;
+          });
       }
     }
   },
@@ -86,12 +90,12 @@ export default {
     colorStyle: isOn => (isOn ? 'success' : 'error'),
     iconStyle: isOn => (isOn ? 'fa-toggle-on' : 'fa-toggle-off'),
     async toggleState(device) {
-      this.$store.dispatch('toggleDeviceLoading', device._id);
+      this.$store.dispatch('toggleDevicegroupLoading', device._id);
       try {
         await this.$store.dispatch('updateDevice', { device });
       } catch (error) {
         this.showSnackBar('error', error.message);
-        this.$store.dispatch('toggleDeviceLoading', device._id);
+        this.$store.dispatch('toggleDevicegroupLoading', device._id);
         this.$store.commit(OFFLINE);
       }
     },
@@ -99,18 +103,45 @@ export default {
       this.snackbar = true;
       this.snackColor = color;
       this.snackText = text;
+    },
+    updateDeviceGroup(deviceId) {
+      localStorage.setItem('defaultDeviceGroupId', deviceId);
+      this.$store.commit(DEVICE_GROUP_ID, deviceId);
+      this.$store
+        .dispatch('updateRooms')
+        .catch(err => console.error(err))
+        .then(() => {
+          this.groupLoading = false;
+          this.roomLoading = false;
+        });
     }
   },
   data: () => ({
     snackbar: false,
     snackColor: 'success',
     snackText: '',
-    isLocal: true,
-    _groupId: ''
+    roomTabIndex: 0,
+    groupLoading: true,
+    roomLoading: true
   }),
+  beforeRouteUpdate(to, from, next) {
+    this.updateDeviceGroup(to.params.id);
+    this.groupLoading = true;
+
+    next();
+  },
   mounted() {
-    if (this.deviceGroups.length == 0) {
-      this.$store.dispatch('refreshGroups');
+    let deviceGroupId = localStorage.getItem('defaultDeviceGroupId');
+    if (deviceGroupId) {
+      this.updateDeviceGroup(deviceGroupId);
+    }
+
+    // On App load
+    if (
+      !this.$store.getters.deviceGroupIds ||
+      this.$store.getters.deviceGroupIds.length == 0
+    ) {
+      this.$store.dispatch('refreshGroups').catch(err => console.error(err));
     }
   },
   components: {

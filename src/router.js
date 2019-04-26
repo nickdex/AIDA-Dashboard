@@ -12,10 +12,16 @@ export default new Router({
     {
       path: '/',
       name: 'login',
-      component: Login
+      component: Login,
+      beforeEnter: (to, from, next) => {
+        const deviceGroupId = localStorage.getItem('defaultDeviceGroupId');
+        if (deviceGroupId) {
+          next(`/home/${deviceGroupId}`);
+        } else next();
+      }
     },
     {
-      path: '/home',
+      path: '/home/:id',
       name: 'home',
       component: Home
     },

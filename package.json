@@ -33,8 +33,16 @@
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^24.7.1",
+    "lint-staged": "^8.1.5",
     "vue-cli-plugin-vuetify": "^0.5.0",
     "vue-template-compiler": "^2.6.10"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged":{
+    "*.vue":["vue-cli-service lint", "git add"],
+    "*.js":["vue-cli-service lint", "git add"]
   },
   "prettier": {
     "singleQuote": true

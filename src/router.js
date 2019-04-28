@@ -5,6 +5,7 @@ import Login from './views/Login.vue';
 import Admin from './views/Admin.vue';
 
 import IotDevice from './components/IotDevice';
+import Room from './components/Room';
 
 Vue.use(Router);
 
@@ -31,7 +32,10 @@ export default new Router({
       path: '/admin',
       name: 'admin',
       component: Admin,
-      children: [{ path: 'devices', component: IotDevice, name: 'devices' }]
+      children: [
+        { path: 'devices', component: IotDevice, name: 'devices' },
+        { path: 'rooms', component: Room, name: 'rooms' }
+      ]
     },
     {
       path: '*',

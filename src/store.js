@@ -106,6 +106,7 @@ export default new Vuex.Store({
     devicesArray(state) {
       return state.devices == null ? null : Object.values(state.devices);
     },
-    deviceGroupIds: state => lodash.map(state.deviceGroups, '_id')
+    deviceGroupIds: state => lodash.map(state.deviceGroups, '_id'),
+    rooms: state => state.rooms
   }
 });

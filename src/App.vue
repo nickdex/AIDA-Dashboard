@@ -37,6 +37,9 @@
           <v-list-tile :to="{ name: 'devices' }">
             <v-list-tile-title>IoTDevices</v-list-tile-title>
           </v-list-tile>
+          <v-list-tile :to="{ name: 'rooms' }">
+            <v-list-tile-title>Rooms</v-list-tile-title>
+          </v-list-tile>
         </v-list-group>
       </v-list>
     </v-navigation-drawer>

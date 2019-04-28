@@ -71,7 +71,7 @@ export default new Vuex.Store({
         .then(rooms => {
           commit(types.ROOM_ID, rooms[0]._id);
           commit(types.ROOMS, rooms);
-          return dispatch('updateDevices');
+          return dispatch('updateAgents');
         });
     },
     createRoom({ state }, room) {
@@ -82,7 +82,15 @@ export default new Vuex.Store({
         .catch(err => console.error(err))
         .then(() => this.dispatch('updateRooms'));
     },
-    updateDevices({ commit, state }) {
+    createAgent(_, agent) {
+      const roomId = agent.roomId;
+      return this._vm.$feathers
+        .service('agents')
+        .create({ ...agent }, { query: { roomId } })
+        .catch(err => console.error(err))
+        .then(() => this.dispatch('updateAgents'));
+    },
+    updateAgents({ commit, state, dispatch }) {
       const roomId = state.roomId;
       return this._vm.$feathers
         .service('agents')
@@ -90,15 +98,16 @@ export default new Vuex.Store({
         .then(agents => {
           commit(types.AGENTS, agents);
 
-          return lodash.map(agents, '_id');
-        })
-        .then(agentIds => {
-          return this._vm.$feathers
-            .service('devices')
-            .find({ query: { agentId: { $in: agentIds } } })
-            .then(devices => {
-              return devices.filter(d => agentIds.includes(d.agentId));
-            });
+          return dispatch('updateDevices');
+        });
+    },
+    updateDevices({ commit, state }) {
+      const agentIds = lodash.map(state.agents, '_id');
+      return this._vm.$feathers
+        .service('devices')
+        .find({ query: { agentId: { $in: agentIds } } })
+        .then(devices => {
+          return devices.filter(d => agentIds.includes(d.agentId));
         })
         .then(devices => {
           return devices.reduce((obj, item) => {

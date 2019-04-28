@@ -77,7 +77,7 @@ export default {
         this.roomLoading = true;
         this.$store.commit(ROOM_ID, this.rooms[value]._id);
         this.$store
-          .dispatch('updateDevices')
+          .dispatch('updateAgents')
           .catch(err => console.error(err))
           .then(() => {
             this.roomLoading = false;

@@ -21,6 +21,12 @@
                     label="Agent Site"
                   ></v-text-field>
                 </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field
+                    v-model="editedItem.roomId"
+                    label="Room Id"
+                  ></v-text-field>
+                </v-flex>
               </v-layout>
             </v-container>
           </v-card-text>
@@ -52,8 +58,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   computed: {
+    rooms() {
+      return mapGetters(['rooms']);
+    },
     agents() {
       return this.$store.getters['agents'];
     },
@@ -100,7 +111,12 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.agents[this.editedIndex], this.editedItem);
       } else {
-        this.agents.push(this.editedItem);
+        const agent = {
+          _id: this.editedItem._id,
+          site: this.editedItem.site,
+          roomId: this.editedItem.roomId
+        };
+        this.$store.dispatch('createAgent', agent);
       }
       this.close();
     }
@@ -112,11 +128,13 @@ export default {
       editedIndex: -1,
       defaultItem: {
         _id: '',
-        site: ''
+        site: '',
+        roomId: ''
       },
       editedItem: {
         _id: '',
-        site: ''
+        site: '',
+        roomId: ''
       },
       headers: [
         { text: 'Room', value: '_id' },
@@ -124,6 +142,9 @@ export default {
         { text: 'Actions', value: 'name', sortable: false }
       ]
     };
+  },
+  mounted() {
+    this.defaultItem.roomId = this.editedItem.roomId = this.$store.state.roomId;
   }
 };
 </script>

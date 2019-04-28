@@ -13,6 +13,7 @@ export default new Vuex.Store({
     deviceGroupId: '',
     devices: [],
     rooms: [],
+    agents: [],
     roomId: ''
   },
   mutations: {
@@ -26,7 +27,8 @@ export default new Vuex.Store({
     [types.DEVICE_GROUPS]: (state, deviceGroups) =>
       (state.deviceGroups = deviceGroups),
     [types.DEVICE_GROUP_ID]: (state, deviceGroupId) =>
-      (state.deviceGroupId = deviceGroupId)
+      (state.deviceGroupId = deviceGroupId),
+    [types.AGENTS]: (state, agents) => (state.agents = agents)
   },
   actions: {
     toggleDeviceLoading({ commit, state }, _id) {
@@ -76,9 +78,11 @@ export default new Vuex.Store({
       const roomId = state.roomId;
       return this._vm.$feathers
         .service('agents')
-        .find({ query: { roomId, $select: ['_id'] } })
-        .then(agentIds => {
-          return agentIds.map(i => i._id);
+        .find({ query: { roomId } })
+        .then(agents => {
+          commit(types.AGENTS, agents);
+
+          return lodash.map(agents, '_id');
         })
         .then(agentIds => {
           return this._vm.$feathers
@@ -107,6 +111,7 @@ export default new Vuex.Store({
       return state.devices == null ? null : Object.values(state.devices);
     },
     deviceGroupIds: state => lodash.map(state.deviceGroups, '_id'),
-    rooms: state => state.rooms
+    rooms: state => state.rooms,
+    agents: state => state.agents
   }
 });

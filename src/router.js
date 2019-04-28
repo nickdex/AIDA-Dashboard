@@ -6,6 +6,7 @@ import Admin from './views/Admin.vue';
 
 import IotDevice from './components/IotDevice';
 import Room from './components/Room';
+import Agent from './components/Agent';
 
 Vue.use(Router);
 
@@ -34,7 +35,8 @@ export default new Router({
       component: Admin,
       children: [
         { path: 'devices', component: IotDevice, name: 'devices' },
-        { path: 'rooms', component: Room, name: 'rooms' }
+        { path: 'rooms', component: Room, name: 'rooms' },
+        { path: 'agents', component: Agent, name: 'agents' }
       ]
     },
     {

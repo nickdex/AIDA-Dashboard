@@ -28,15 +28,16 @@
           </v-list-tile>
         </v-list-group>
 
-        <v-list-tile to="/admin">
-          <v-list-tile-action>
-            <v-icon>fas fa-user-shield</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>Admin</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+        <v-list-group prepend-icon="fas fa-user-shield" value="true">
+          <template v-slot:activator>
+            <v-list-tile>
+              <v-list-tile-title>Admin</v-list-tile-title>
+            </v-list-tile>
+          </template>
+          <v-list-tile :to="{ name: 'devices' }">
+            <v-list-tile-title>IoTDevices</v-list-tile-title>
+          </v-list-tile>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
 

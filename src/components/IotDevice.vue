@@ -1,12 +1,11 @@
 <template>
   <v-card>
     <v-toolbar flat>
-      <v-toolbar-title>IotDevice CRUD</v-toolbar-title>
-      <v-divider class="mx-2" inset vertical></v-divider>
+      <v-toolbar-title>IotDevices</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+          <v-btn color="primary" dark class="mb-2" v-on="on">New Device</v-btn>
         </template>
         <v-card>
           <v-card-title>
@@ -45,7 +44,7 @@
         <td>{{ props.item._id | parentId }}</td>
         <td>{{ props.item.name }}</td>
         <td>{{ props.item.pin }}</td>
-        <td class="justify-center layout px-0 mr-1">
+        <td class="column text-xs-left">
           <v-icon small class="mr-2" @click="editItem(props.item)">
             fas fa-edit
           </v-icon>
@@ -131,7 +130,7 @@ export default {
         pin: 0
       },
       headers: [
-        { text: 'Id', value: '_id' },
+        { text: 'Agent Id', value: '_id' },
         { text: 'Name', value: 'name' },
         { text: 'Pin', value: 'pin' },
         { text: 'Actions', value: 'name', sortable: false }

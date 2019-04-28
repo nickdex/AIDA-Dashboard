@@ -28,7 +28,7 @@
           </v-list-tile>
         </v-list-group>
 
-        <v-list-tile to="admin">
+        <v-list-tile to="/admin">
           <v-list-tile-action>
             <v-icon>fas fa-user-shield</v-icon>
           </v-list-tile-action>
@@ -173,14 +173,7 @@ export default {
       isSubscribed: false,
       username: '',
       usernameKey: 'username',
-      drawer: false,
-      routes: [
-        {
-          title: 'Admin',
-          route: 'admin',
-          icon: 'fas fa-user-shield'
-        }
-      ]
+      drawer: false
     };
   },
   name: 'App'

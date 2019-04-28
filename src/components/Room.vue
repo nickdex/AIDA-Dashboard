@@ -21,6 +21,12 @@
                     label="Room Name"
                   ></v-text-field>
                 </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field
+                    v-model="editedItem.deviceGroupId"
+                    label="Group Id"
+                  ></v-text-field>
+                </v-flex>
               </v-layout>
             </v-container>
           </v-card-text>
@@ -100,7 +106,8 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.rooms[this.editedIndex], this.editedItem);
       } else {
-        this.rooms.push(this.editedItem);
+        const room = { _id: this.editedItem._id, name: this.editedItem.name };
+        this.$store.dispatch('createRoom', room);
       }
       this.close();
     }
@@ -109,16 +116,16 @@ export default {
     return {
       dialog: false,
       valid: false,
-      name: '',
-      pin: 0,
       editedIndex: -1,
       defaultItem: {
         _id: '',
-        name: ''
+        name: '',
+        deviceGroupId: ''
       },
       editedItem: {
         _id: '',
-        name: ''
+        name: '',
+        deviceGroupId: ''
       },
       headers: [
         { text: 'Device Group', value: '_id' },
@@ -126,6 +133,9 @@ export default {
         { text: 'Actions', value: 'name', sortable: false }
       ]
     };
+  },
+  mounted() {
+    this.defaultItem.deviceGroupId = this.editedItem.deviceGroupId = this.$store.state.deviceGroupId;
   }
 };
 </script>

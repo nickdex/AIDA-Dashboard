@@ -74,6 +74,14 @@ export default new Vuex.Store({
           return dispatch('updateDevices');
         });
     },
+    createRoom({ state }, room) {
+      const deviceGroupId = state.deviceGroupId;
+      return this._vm.$feathers
+        .service('rooms')
+        .create({ ...room }, { query: { deviceGroupId } })
+        .catch(err => console.error(err))
+        .then(() => this.dispatch('updateRooms'));
+    },
     updateDevices({ commit, state }) {
       const roomId = state.roomId;
       return this._vm.$feathers

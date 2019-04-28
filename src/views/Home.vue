@@ -131,7 +131,9 @@ export default {
     next();
   },
   mounted() {
-    let deviceGroupId = localStorage.getItem('defaultDeviceGroupId');
+    let deviceGroupId =
+      this.$route.params.id || localStorage.getItem('defaultDeviceGroupId');
+
     if (deviceGroupId) {
       this.updateDeviceGroup(deviceGroupId);
     }

@@ -121,6 +121,14 @@ export default new Vuex.Store({
           commit(types.ONLINE);
           commit(types.DEVICES, devices);
         });
+    },
+    createDevice({ dispatch }, device) {
+      const agentId = device.agentId;
+      return this._vm.$feathers
+        .service('devices')
+        .create({ ...device }, { query: { agentId } })
+        .catch(err => console.error(err))
+        .then(() => dispatch('updateDevices'));
     }
   },
   getters: {
@@ -129,6 +137,7 @@ export default new Vuex.Store({
     },
     deviceGroupIds: state => lodash.map(state.deviceGroups, '_id'),
     rooms: state => state.rooms,
-    agents: state => state.agents
+    agents: state => state.agents,
+    agentIds: state => lodash.map(state.agents, '_id')
   }
 });

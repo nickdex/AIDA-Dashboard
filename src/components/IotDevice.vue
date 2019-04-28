@@ -15,16 +15,29 @@
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
-                <v-flex xs12 sm6 md4>
+                <v-flex xs12 sm6>
                   <v-text-field
                     v-model="editedItem.name"
                     label="Device Name"
                   ></v-text-field>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
+                <v-flex xs12 sm6>
                   <v-text-field
                     v-model="editedItem.pin"
                     label="Pin"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6>
+                  <v-select
+                    :items="agentIds"
+                    label="Agent Ids"
+                    v-model="editedItem.agentId"
+                  ></v-select>
+                </v-flex>
+                <v-flex xs12 sm6>
+                  <v-text-field
+                    v-model="editedItem.agentId"
+                    label="Agent Id"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -59,11 +72,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   computed: {
-    devices() {
-      return this.$store.getters['devicesArray'];
-    },
+    ...mapGetters({ devices: 'devicesArray', agentIds: 'agentIds' }),
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item';
     }
@@ -107,7 +120,13 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.devices[this.editedIndex], this.editedItem);
       } else {
-        this.devices.push(this.editedItem);
+        const iotDevice = {
+          _id: this.editedItem._id,
+          name: this.editedItem.name,
+          pin: this.editedItem.pin,
+          agentId: this.editedItem.agentId
+        };
+        this.$store.dispatch('createDevice', iotDevice);
       }
       this.close();
     }
@@ -122,12 +141,14 @@ export default {
       defaultItem: {
         _id: '',
         name: '',
-        pin: 0
+        pin: 0,
+        agentId: ''
       },
       editedItem: {
         _id: '',
         name: '',
-        pin: 0
+        pin: 0,
+        agentId: ''
       },
       headers: [
         { text: 'Agent Id', value: '_id' },

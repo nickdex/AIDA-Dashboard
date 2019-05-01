@@ -129,6 +129,13 @@ export default new Vuex.Store({
         .create({ ...device }, { query: { agentId } })
         .catch(err => console.error(err))
         .then(() => dispatch('updateDevices'));
+    },
+    updateItem({ dispatch }, serviceName, item) {
+      return this._vm.$feathers
+        .service(serviceName)
+        .update(item._id, item)
+        .catch(err => console.error(err))
+        .then(() => dispatch('updateRooms'));
     }
   },
   getters: {

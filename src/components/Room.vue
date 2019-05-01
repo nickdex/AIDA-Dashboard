@@ -103,10 +103,15 @@ export default {
     },
 
     save() {
+      const room = {
+        _id: this.editedItem._id,
+        name: this.editedItem.name,
+        deviceGroupId: this.editedItem.deviceGroupId
+      };
       if (this.editedIndex > -1) {
         Object.assign(this.rooms[this.editedIndex], this.editedItem);
+        this.$store.dispatch('updateItem', 'rooms', room);
       } else {
-        const room = { _id: this.editedItem._id, name: this.editedItem.name };
         this.$store.dispatch('createRoom', room);
       }
       this.close();

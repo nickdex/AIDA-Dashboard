@@ -108,14 +108,15 @@ export default {
     },
 
     save() {
+      const agent = {
+        _id: this.editedItem._id,
+        site: this.editedItem.site,
+        roomId: this.editedItem.roomId
+      };
       if (this.editedIndex > -1) {
         Object.assign(this.agents[this.editedIndex], this.editedItem);
+        this.$store.dispatch('updateItem', 'agents', agent);
       } else {
-        const agent = {
-          _id: this.editedItem._id,
-          site: this.editedItem.site,
-          roomId: this.editedItem.roomId
-        };
         this.$store.dispatch('createAgent', agent);
       }
       this.close();

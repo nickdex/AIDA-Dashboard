@@ -117,15 +117,16 @@ export default {
     },
 
     save() {
+      const iotDevice = {
+        _id: this.editedItem._id,
+        name: this.editedItem.name,
+        pin: this.editedItem.pin,
+        agentId: this.editedItem.agentId
+      };
       if (this.editedIndex > -1) {
         Object.assign(this.devices[this.editedIndex], this.editedItem);
+        this.$store.dispatch('updateItem', 'devices', iotDevice);
       } else {
-        const iotDevice = {
-          _id: this.editedItem._id,
-          name: this.editedItem.name,
-          pin: this.editedItem.pin,
-          agentId: this.editedItem.agentId
-        };
         this.$store.dispatch('createDevice', iotDevice);
       }
       this.close();

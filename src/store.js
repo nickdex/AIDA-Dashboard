@@ -13,6 +13,7 @@ export default new Vuex.Store({
     deviceGroupId: '',
     devices: [],
     rooms: [],
+    agents: [],
     roomId: ''
   },
   mutations: {
@@ -26,7 +27,8 @@ export default new Vuex.Store({
     [types.DEVICE_GROUPS]: (state, deviceGroups) =>
       (state.deviceGroups = deviceGroups),
     [types.DEVICE_GROUP_ID]: (state, deviceGroupId) =>
-      (state.deviceGroupId = deviceGroupId)
+      (state.deviceGroupId = deviceGroupId),
+    [types.AGENTS]: (state, agents) => (state.agents = agents)
   },
   actions: {
     toggleDeviceLoading({ commit, state }, _id) {
@@ -69,24 +71,43 @@ export default new Vuex.Store({
         .then(rooms => {
           commit(types.ROOM_ID, rooms[0]._id);
           commit(types.ROOMS, rooms);
+          return dispatch('updateAgents');
+        });
+    },
+    createRoom({ state }, room) {
+      const deviceGroupId = state.deviceGroupId;
+      return this._vm.$feathers
+        .service('rooms')
+        .create({ ...room }, { query: { deviceGroupId } })
+        .catch(err => console.error(err))
+        .then(() => this.dispatch('updateRooms'));
+    },
+    createAgent(_, agent) {
+      const roomId = agent.roomId;
+      return this._vm.$feathers
+        .service('agents')
+        .create({ ...agent }, { query: { roomId } })
+        .catch(err => console.error(err))
+        .then(() => this.dispatch('updateAgents'));
+    },
+    updateAgents({ commit, state, dispatch }) {
+      const roomId = state.roomId;
+      return this._vm.$feathers
+        .service('agents')
+        .find({ query: { roomId } })
+        .then(agents => {
+          commit(types.AGENTS, agents);
+
           return dispatch('updateDevices');
         });
     },
     updateDevices({ commit, state }) {
-      const roomId = state.roomId;
+      const agentIds = lodash.map(state.agents, '_id');
       return this._vm.$feathers
-        .service('agents')
-        .find({ query: { roomId, $select: ['_id'] } })
-        .then(agentIds => {
-          return agentIds.map(i => i._id);
-        })
-        .then(agentIds => {
-          return this._vm.$feathers
-            .service('devices')
-            .find({ query: { agentId: { $in: agentIds } } })
-            .then(devices => {
-              return devices.filter(d => agentIds.includes(d.agentId));
-            });
+        .service('devices')
+        .find({ query: { agentId: { $in: agentIds } } })
+        .then(devices => {
+          return devices.filter(d => agentIds.includes(d.agentId));
         })
         .then(devices => {
           return devices.reduce((obj, item) => {
@@ -100,12 +121,30 @@ export default new Vuex.Store({
           commit(types.ONLINE);
           commit(types.DEVICES, devices);
         });
+    },
+    createDevice({ dispatch }, device) {
+      const agentId = device.agentId;
+      return this._vm.$feathers
+        .service('devices')
+        .create({ ...device }, { query: { agentId } })
+        .catch(err => console.error(err))
+        .then(() => dispatch('updateDevices'));
+    },
+    updateItem({ dispatch }, serviceName, item) {
+      return this._vm.$feathers
+        .service(serviceName)
+        .update(item._id, item)
+        .catch(err => console.error(err))
+        .then(() => dispatch('updateRooms'));
     }
   },
   getters: {
     devicesArray(state) {
       return state.devices == null ? null : Object.values(state.devices);
     },
-    deviceGroupIds: state => lodash.map(state.deviceGroups, '_id')
+    deviceGroupIds: state => lodash.map(state.deviceGroups, '_id'),
+    rooms: state => state.rooms,
+    agents: state => state.agents,
+    agentIds: state => lodash.map(state.agents, '_id')
   }
 });

@@ -115,7 +115,10 @@ export default {
       };
       if (this.editedIndex > -1) {
         Object.assign(this.agents[this.editedIndex], this.editedItem);
-        this.$store.dispatch('updateItem', 'agents', agent);
+        this.$store.dispatch('updateItem', {
+          serviceName: 'agents',
+          item: agent
+        });
       } else {
         this.$store.dispatch('createAgent', agent);
       }

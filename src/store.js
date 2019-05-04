@@ -130,7 +130,7 @@ export default new Vuex.Store({
         .catch(err => console.error(err))
         .then(() => dispatch('updateDevices'));
     },
-    updateItem({ dispatch }, serviceName, item) {
+    updateItem({ dispatch }, { serviceName, item }) {
       return this._vm.$feathers
         .service(serviceName)
         .update(item._id, item)

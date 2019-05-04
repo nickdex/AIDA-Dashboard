@@ -125,7 +125,10 @@ export default {
       };
       if (this.editedIndex > -1) {
         Object.assign(this.devices[this.editedIndex], this.editedItem);
-        this.$store.dispatch('updateItem', 'devices', iotDevice);
+        this.$store.dispatch('updateItem', {
+          serviceName: 'devices',
+          item: iotDevice
+        });
       } else {
         this.$store.dispatch('createDevice', iotDevice);
       }

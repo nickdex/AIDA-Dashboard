@@ -110,7 +110,10 @@ export default {
       };
       if (this.editedIndex > -1) {
         Object.assign(this.rooms[this.editedIndex], this.editedItem);
-        this.$store.dispatch('updateItem', 'rooms', room);
+        this.$store.dispatch('updateItem', {
+          serviceName: 'rooms',
+          item: room
+        });
       } else {
         this.$store.dispatch('createRoom', room);
       }

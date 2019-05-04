@@ -31,10 +31,10 @@ export default new Vuex.Store({
     [types.AGENTS]: (state, agents) => (state.agents = agents)
   },
   actions: {
-    toggleDeviceLoading({ commit, state }, _id) {
+    toggleDeviceLoading({ commit, state }, id) {
       commit(types.DEVICE, {
-        ...state.devices[_id],
-        reqFlag: !state.devices[_id].reqFlag
+        ...state.devices[id],
+        reqFlag: !state.devices[id].reqFlag
       });
     },
     async updateDevice({ commit }, { device }) {
@@ -69,26 +69,11 @@ export default new Vuex.Store({
         .service('rooms')
         .find({ query: { deviceGroupId } })
         .then(rooms => {
-          commit(types.ROOM_ID, rooms[0]._id);
+          commit(types.ROOM_ID, lodash.first(rooms)._id);
+
           commit(types.ROOMS, rooms);
           return dispatch('updateAgents');
         });
-    },
-    createRoom({ state }, room) {
-      const deviceGroupId = state.deviceGroupId;
-      return this._vm.$feathers
-        .service('rooms')
-        .create({ ...room }, { query: { deviceGroupId } })
-        .catch(err => console.error(err))
-        .then(() => this.dispatch('updateRooms'));
-    },
-    createAgent(_, agent) {
-      const roomId = agent.roomId;
-      return this._vm.$feathers
-        .service('agents')
-        .create({ ...agent }, { query: { roomId } })
-        .catch(err => console.error(err))
-        .then(() => this.dispatch('updateAgents'));
     },
     updateAgents({ commit, state, dispatch }) {
       const roomId = state.roomId;
@@ -136,6 +121,22 @@ export default new Vuex.Store({
         .update(item._id, item)
         .catch(err => console.error(err))
         .then(() => dispatch('updateRooms'));
+    },
+    createRoom({ state }, room) {
+      const deviceGroupId = state.deviceGroupId;
+      return this._vm.$feathers
+        .service('rooms')
+        .create({ ...room }, { query: { deviceGroupId } })
+        .catch(err => console.error(err))
+        .then(() => this.dispatch('updateRooms'));
+    },
+    createAgent(_, agent) {
+      const roomId = agent.roomId;
+      return this._vm.$feathers
+        .service('agents')
+        .create({ ...agent }, { query: { roomId } })
+        .catch(err => console.error(err))
+        .then(() => this.dispatch('updateAgents'));
     }
   },
   getters: {

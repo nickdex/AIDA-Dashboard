@@ -57,7 +57,7 @@
       <v-btn icon @click="subscribe()">
         <v-icon>fas {{ isSubscribed ? 'fa-bell-slash' : 'fa-bell' }}</v-icon>
       </v-btn>
-      <v-btn icon @click="$store.dispatch('refreshGroups')">
+      <v-btn icon @click="$store.dispatch('updateDevices')">
         <v-icon>fas fa-sync</v-icon>
       </v-btn>
       <v-btn flat icon :color="isOnline ? 'green' : 'red'">

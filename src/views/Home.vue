@@ -78,7 +78,7 @@ export default {
         this.$store.commit(ROOM_ID, this.rooms[value]._id);
         this.$store
           .dispatch('updateAgents')
-          .catch(err => console.error(err))
+          .catch(error => this.showSnackBar('error', error.message))
           .then(() => {
             this.roomLoading = false;
             this.roomTabIndex = value;
@@ -109,7 +109,7 @@ export default {
       this.$store.commit(DEVICE_GROUP_ID, deviceId);
       this.$store
         .dispatch('updateRooms')
-        .catch(err => console.error(err))
+        .catch(error => this.showSnackBar('error', error.message))
         .then(() => {
           this.groupLoading = false;
           this.roomLoading = false;
@@ -143,7 +143,9 @@ export default {
       !this.$store.getters.deviceGroupIds ||
       this.$store.getters.deviceGroupIds.length == 0
     ) {
-      this.$store.dispatch('refreshGroups').catch(err => console.error(err));
+      this.$store
+        .dispatch('refreshGroups')
+        .catch(error => this.showSnackBar('error', error.message));
     }
   },
   components: {

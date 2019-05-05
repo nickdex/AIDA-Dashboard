@@ -28,7 +28,7 @@
           </v-list-tile>
         </v-list-group>
 
-        <v-list-group prepend-icon="fas fa-user-shield" value="true">
+        <v-list-group prepend-icon="fas fa-user-shield" value="false">
           <template v-slot:activator>
             <v-list-tile>
               <v-list-tile-title>Admin</v-list-tile-title>
@@ -69,7 +69,7 @@
       <router-view></router-view>
     </v-content>
 
-    <v-footer :fixed="fixed" app>
+    <v-footer app>
       <v-spacer></v-spacer>
       <span>Made with ♥ in India</span>
       <v-spacer></v-spacer>
@@ -92,7 +92,7 @@ export default {
   },
   methods: {
     loggedIn() {
-      this.username = localStorage.getItem(this.usernameKey);
+      this.username = localStorage.getItem('username');
       this.isLoggedIn = true;
       this.setSubscriptionState();
     },
@@ -163,7 +163,7 @@ export default {
     }
   },
   created() {
-    const username = localStorage.getItem(this.usernameKey);
+    const username = localStorage.getItem('username');
     if (!username) {
       this.isLoggedIn = false;
       return;
@@ -174,12 +174,10 @@ export default {
   },
   data() {
     return {
-      fixed: false,
       title: 'AIDA Dashboard',
       isLoggedIn: false,
       isSubscribed: false,
       username: '',
-      usernameKey: 'username',
       drawer: false
     };
   },

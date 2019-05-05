@@ -30,18 +30,16 @@ export default new Router({
       path: '/app',
       name: 'shell',
       component: Shell,
+      children: [{ path: 'home/:id', name: 'home', component: Home }]
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: Admin,
       children: [
-        { path: 'home/:id', name: 'home', component: Home },
-        {
-          path: 'admin',
-          name: 'admin',
-          component: Admin,
-          children: [
-            { path: 'devices', component: IotDevice, name: 'devices' },
-            { path: 'rooms', component: Room, name: 'rooms' },
-            { path: 'agents', component: Agent, name: 'agents' }
-          ]
-        }
+        { path: 'devices', component: IotDevice, name: 'devices' },
+        { path: 'rooms', component: Room, name: 'rooms' },
+        { path: 'agents', component: Agent, name: 'agents' }
       ]
     },
     {

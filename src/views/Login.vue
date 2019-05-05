@@ -79,7 +79,7 @@ export default {
         await this.$store.dispatch('refreshGroups');
         const deviceGroupId = lodash.first(this.$store.getters.deviceGroupIds);
         localStorage.setItem('defaultDeviceGroupId', deviceGroupId);
-        this.$router.replace(`/home/${deviceGroupId}`);
+        this.$router.replace({ name: 'home', params: { id: deviceGroupId } });
       } catch (error) {
         console.error('Failed to login', error);
       }

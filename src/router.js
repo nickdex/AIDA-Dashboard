@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+
 import Home from './views/Home.vue';
-import Login from './views/Login.vue';
+import Shell from './views/Shell.vue';
+import LoginBase from './views/LoginBase';
 import Admin from './views/Admin.vue';
 
 import IotDevice from './components/IotDevice';
@@ -16,32 +18,35 @@ export default new Router({
     {
       path: '/',
       name: 'login',
-      component: Login,
+      component: LoginBase,
       beforeEnter: (to, from, next) => {
         const deviceGroupId = localStorage.getItem('defaultDeviceGroupId');
         if (deviceGroupId) {
-          next(`/home/${deviceGroupId}`);
+          next(`/app/home/${deviceGroupId}`);
         } else next();
       }
     },
     {
-      path: '/home/:id',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: Admin,
+      path: '/app',
+      name: 'shell',
+      component: Shell,
       children: [
-        { path: 'devices', component: IotDevice, name: 'devices' },
-        { path: 'rooms', component: Room, name: 'rooms' },
-        { path: 'agents', component: Agent, name: 'agents' }
+        { path: 'home/:id', name: 'home', component: Home },
+        {
+          path: 'admin',
+          name: 'admin',
+          component: Admin,
+          children: [
+            { path: 'devices', component: IotDevice, name: 'devices' },
+            { path: 'rooms', component: Room, name: 'rooms' },
+            { path: 'agents', component: Agent, name: 'agents' }
+          ]
+        }
       ]
     },
     {
       path: '*',
-      component: Login
+      component: LoginBase
     }
   ]
 });

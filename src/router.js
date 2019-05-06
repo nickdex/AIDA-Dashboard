@@ -27,10 +27,10 @@ export default new Router({
       }
     },
     {
-      path: '/app',
+      path: '/home',
       name: 'shell',
       component: Shell,
-      children: [{ path: 'home/:id', name: 'home', component: Home }]
+      children: [{ path: ':id', name: 'home', component: Home }]
     },
     {
       path: '/admin',

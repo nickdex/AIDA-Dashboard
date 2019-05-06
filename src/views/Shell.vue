@@ -17,6 +17,10 @@
       <v-btn flat icon :color="isOnline ? 'green' : 'red'">
         <v-icon>fas fa-circle</v-icon>
       </v-btn>
+
+      <template v-slot:extension>
+        <home-tabs />
+      </template>
     </v-toolbar>
 
     <v-content>
@@ -32,21 +36,19 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import NavDrawer from '../components/NavDrawer';
+import HomeTabs from '../components/HomeTabs';
 
 export default {
-  components: { NavDrawer },
+  components: { NavDrawer, HomeTabs },
   computed: {
-    isOnline() {
-      return this.$store.state.isOnline;
-    },
-    groupId() {
-      return this.$store.state.groupId;
-    }
+    ...mapState(['isOnline'])
   },
   methods: {
-    loggedIn() {
-      this.username = localStorage.getItem('username');
+    logIn(username) {
+      this.username = username;
       this.isLoggedIn = true;
       this.setSubscriptionState();
     },
@@ -122,9 +124,7 @@ export default {
       this.isLoggedIn = false;
       return;
     }
-    this.username = username;
-    this.isLoggedIn = true;
-    this.setSubscriptionState();
+    this.logIn(username);
   },
   data() {
     return {

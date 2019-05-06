@@ -14,7 +14,8 @@ export default new Vuex.Store({
     devices: [],
     rooms: [],
     agents: [],
-    roomId: ''
+    roomId: '',
+    isRoomLoading: true
   },
   mutations: {
     [types.ONLINE]: state => (state.isOnline = true),
@@ -28,7 +29,9 @@ export default new Vuex.Store({
       (state.deviceGroups = deviceGroups),
     [types.DEVICE_GROUP_ID]: (state, deviceGroupId) =>
       (state.deviceGroupId = deviceGroupId),
-    [types.AGENTS]: (state, agents) => (state.agents = agents)
+    [types.AGENTS]: (state, agents) => (state.agents = agents),
+    [types.IS_ROOM_LOADING]: (state, isRoomLoading) =>
+      (state.isRoomLoading = isRoomLoading)
   },
   actions: {
     toggleDeviceLoading({ commit, state }, id) {

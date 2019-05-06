@@ -11,3 +11,5 @@ export const DEVICE_GROUPS = 'DEVICE_GROUPS';
 export const DEVICE_GROUP_ID = 'DEVICE_GROUP_ID';
 
 export const AGENTS = 'AGENTS';
+
+export const IS_ROOM_LOADING = 'IS_ROOM_LOADING';
